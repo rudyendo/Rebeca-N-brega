@@ -1,5 +1,19 @@
 
-export type Category = 'Todos' | 'Tratamento Técnico' | 'Coloração' | 'Descoloração' | 'Cachos' | 'Finalização' | 'Masculino';
+export type Category = 
+  | 'Todos' 
+  | 'ACIDIFICANTE' 
+  | 'ELEMENTS' 
+  | 'BIORESTORE' 
+  | 'CRONOGRAMA CAPILAR' 
+  | 'PERFECT BLOND' 
+  | 'COLORAÇÕES' 
+  | 'RESTAURAÇÃO' 
+  | 'REDUTOR DE VOLUME' 
+  | 'TRATAMENTOS' 
+  | 'CACHOS PERFEITOS' 
+  | 'LINHA LAVATÓRIO' 
+  | 'FINALIZADORES' 
+  | 'HOMBRE';
 
 export interface Review {
   id: string;
