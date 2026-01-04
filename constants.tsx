@@ -1,7 +1,7 @@
 
 import { Category, Product, Review } from './types';
 
-export const WHATSAPP_NUMBER = "5511999999999";
+export const WHATSAPP_NUMBER = "5584996611849";
 export const VENDOR_NAME = "Rebeca Nóbrega";
 export const VENDOR_SUBTITLE = "Consultora Mirra Cosméticos e Maison Visagé";
 
@@ -34,7 +34,7 @@ export const PRODUCTS_DATA: Product[] = [
     description: 'Sistema de reconstrução profunda e estabilização de pH para cabelos quimicamente tratados.',
     price: 185.00,
     category: 'Tratamento Técnico',
-    imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/07/Captura-de-tela-de-2025-07-23-17-37-42.png', 
+    imageUrl: 'https://images.unsplash.com/photo-1594465919760-441fe5908ab0?q=80&w=800&auto=format&fit=crop', 
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'O Acidic Bonding é um complexo reconstrutor que atua no córtex capilar, interrompendo a quebra e selando as cutículas instantaneamente após processos de descoloração ou coloração.',
     reviews: [mockReviews[0]]
@@ -46,7 +46,7 @@ export const PRODUCTS_DATA: Product[] = [
     description: 'Redução de volume e realinhamento capilar com tecnologia de Tanino e Óleo de Abacate.',
     price: 245.00,
     category: 'Tratamento Técnico',
-    imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/btx.webp',
+    imageUrl: 'https://images.unsplash.com/photo-1527799822367-a233b47b0ee6?q=80&w=800&auto=format&fit=crop',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Promove um liso natural com brilho espelhado. Fórmula sem formol, segura para o profissional e para a cliente, com alta carga lipídica.',
     reviews: []
@@ -58,7 +58,7 @@ export const PRODUCTS_DATA: Product[] = [
     description: 'Reposição de massa e membrana celular complexa para fios extremamente porosos.',
     price: 167.00,
     category: 'Tratamento Técnico',
-    imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/fusion-cmc2.webp',
+    imageUrl: 'https://images.unsplash.com/photo-1626784213176-f48d80bbd1ee?q=80&w=800&auto=format&fit=crop',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Devolve a elasticidade natural. Ideal para cabelos que passaram por processos químicos sucessivos e perderam a resistência mecânica.',
     reviews: []
@@ -72,7 +72,7 @@ export const PRODUCTS_DATA: Product[] = [
     description: 'Nanopigmentação avançada com cobertura 100% de brancos e brilho tridimensional.',
     price: 38.00,
     category: 'Coloração',
-    imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/coloracao.webp',
+    imageUrl: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?q=80&w=800&auto=format&fit=crop',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Baixíssimo teor de amônia. Enriquecida com óleos essenciais que protegem o couro cabeludo durante a pausa.',
     reviews: []
