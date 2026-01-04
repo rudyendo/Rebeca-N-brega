@@ -58,7 +58,7 @@ export const PRODUCTS_DATA: Product[] = [
     description: 'Reposição de massa e membrana celular complexa para fios extremamente porosos.',
     price: 167.00,
     category: 'Tratamento Técnico',
-    imageUrl: 'https://images.unsplash.com/photo-1626784213176-f48d80bbd1ee?q=80&w=800&auto=format&fit=crop',
+    imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/fusion-cmc2.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Devolve a elasticidade natural. Ideal para cabelos que passaram por processos químicos sucessivos e perderam a resistência mecânica.',
     reviews: []
