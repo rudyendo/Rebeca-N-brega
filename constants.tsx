@@ -573,7 +573,7 @@ export const PRODUCTS_DATA: Product[] = [
     name: 'Trend Express 10 Minutes',
     brand: 'Mirra Professional',
     description: 'Coloração permanente em apenas 10 minutos.',
-    price: 42.00,
+    price: 45.00,
     category: 'COLORAÇÕES',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/trend-express-10-minutes-Photoroom.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
@@ -715,7 +715,7 @@ export const PRODUCTS_DATA: Product[] = [
     category: 'TRATAMENTOS',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/condicionador-mascara-pos-progressiva-pro.png',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Condicionamento equilibrado que preserva a cor e o efeito liso.',
+    details: 'Condicionamento equilibrado que preserva a col e o efeito liso.',
     reviews: []
   },
   {
