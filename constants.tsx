@@ -46,12 +46,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'elements-leite-kit',
     name: 'Kit Elements Proteínas do Leite',
     brand: 'Mirra Professional',
-    description: 'Tratamento completo revitalizante e hidratante.',
+    description: 'Composto por: Shampoo (1L), Condicionador (1L) e Máscara de Tratamento (1kg).',
     price: 380.00,
     category: 'ELEMENTS',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/home.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Kit profissional contendo Shampoo, Condicionador e Máscara. Ideal para restauração profunda pós-química.',
+    details: 'Kit profissional de alta performance para restauração profunda pós-química. Devolve a nutrição e proteínas essenciais aos fios.',
     reviews: []
   },
   {
@@ -96,12 +96,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'elements-ginkgo-kit',
     name: 'Kit Elements Ginkgo Biloba + Aloe Vera',
     brand: 'Mirra Professional',
-    description: 'Cronograma de crescimento e fortalecimento capilar.',
+    description: 'Composto por: Shampoo (1L), Condicionador (1L) e Máscara de Fortalecimento (1kg).',
     price: 380.00,
     category: 'ELEMENTS',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/ginkgo-pro-Photoroom-1010x1024.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Kit completo para induzir o crescimento saudável e prevenir a queda.',
+    details: 'Protocolo completo para induzir o crescimento saudável, aumentar a circulação no couro cabeludo e prevenir a queda.',
     reviews: []
   },
   {
@@ -146,12 +146,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'elements-tutano-kit',
     name: 'Kit Elements Tutano + Caviar',
     brand: 'Mirra Professional',
-    description: 'Nutrição de luxo para cabelos extra ressecados.',
+    description: 'Composto por: Shampoo (1L), Condicionador (1L) e Máscara de Nutrição (1kg).',
     price: 235.00,
     category: 'ELEMENTS',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/tutano-e-caviar-PRO.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Kit de alto impacto nutritivo. Rico em colágeno e ômegas.',
+    details: 'Kit de alto impacto nutritivo. Rico em colágeno e ômegas para cabelos extra ressecados.',
     reviews: []
   },
   {
@@ -184,12 +184,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'elements-queratina-kit',
     name: 'Kit Elements Queratina + Manteiga de Karitê',
     brand: 'Mirra Professional',
-    description: 'Reconstrução profunda para cabelos extremamente danificados.',
+    description: 'Composto por: Shampoo (1L), Condicionador (1L) e Máscara Reconstrutora (1kg).',
     price: 235.00,
     category: 'ELEMENTS',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/elements-queratina-manteiga-de-karite-Copia-Photoroom.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Combina o poder reconstrutor da queratina com a nutrição intensa da manteiga de karitê.',
+    details: 'Combina o poder reconstrutor da queratina com a nutrição intensa da manteiga de karitê para fios danificados.',
     reviews: []
   },
   {
@@ -222,12 +222,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'elements-cacau-kit',
     name: 'Kit Elements Cacau + Açaí + Mel',
     brand: 'Mirra Professional',
-    description: 'Revitalização antioxidante e brilho intenso.',
+    description: 'Composto por: Shampoo (1L), Condicionador (1L) e Máscara Revitalizante (1kg).',
     price: 235.00,
     category: 'ELEMENTS',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/elements-1000-cacau-acai-mel-Photoroom-1024x1024.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Tratamento rico em vitaminas e polifenóis para fios sedosos e brilhantes.',
+    details: 'Tratamento rico em vitaminas e polifenóis para fios sedosos e brilhantes com ação antioxidante.',
     reviews: []
   },
   {
@@ -260,12 +260,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'elements-nutricao-kit',
     name: 'Kit Elements Nutrição Vegetal',
     brand: 'Mirra Professional',
-    description: 'Reposição de massa e óleos vegetais essenciais.',
+    description: 'Composto por: Shampoo (1L), Condicionador (1L) e Máscara de Reposição de Massa (1kg).',
     price: 235.00,
     category: 'ELEMENTS',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Elements-nutricao-1000.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Nutrição profunda para cabelos secos, opacos e sem vida.',
+    details: 'Nutrição profunda para cabelos secos, opacos e sem vida através de óleos vegetais nobres.',
     reviews: []
   },
   {
@@ -298,12 +298,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'biorestore-total-repair-kit',
     name: 'Kit BioRestore Total Repair',
     brand: 'Mirra Professional',
-    description: 'Poderoso tratamento com Cistina e Óleo de Ojon orgânico.',
+    description: 'Composto por: Shampoo (1L), Condicionador (1L) e Máscara com Ojon (1kg).',
     price: 278.00,
     category: 'BIORESTORE',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Shampoo-total-repair-pro-Photoroom-1024x1024.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Aumenta a durabilidade do alisamento e repõe aminoácidos perdidos. Contém filtros UVA/UVB.',
+    details: 'Poderoso tratamento com Cistina e Óleo de Ojon orgânico. Aumenta a durabilidade do alisamento.',
     reviews: []
   },
   {
@@ -336,12 +336,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'biorestore-argan-kit',
     name: 'Kit BioRestore Argan',
     brand: 'Mirra Professional',
-    description: 'Tratamento hidratante e reparador com Ômegas 3, 6 e 9.',
+    description: 'Composto por: Shampoo (1L), Condicionador (1L) e Máscara Reparadora (1kg).',
     price: 278.00,
     category: 'BIORESTORE',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/pro-1.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Alta concentração de vitaminas para o combate aos radicais livres e diminuição drástica do frizz.',
+    details: 'Tratamento hidratante e reparador com Ômegas 3, 6 e 9. Alta concentração de vitaminas.',
     reviews: []
   },
   {
@@ -374,12 +374,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'biorestore-jojoba-kit',
     name: 'Kit BioRestore Jojoba e Andiroba',
     brand: 'Mirra Professional',
-    description: 'Regeneração intensiva para fios extremamente secos.',
+    description: 'Composto por: Shampoo (1L), Condicionador (1L) e Máscara Regeneradora (1kg).',
     price: 465.00,
     category: 'BIORESTORE',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/pro.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Combinação luxuosa de óleos da Amazônia para reconstrução lipídica de alto impacto.',
+    details: 'Regeneração intensiva para fios extremamente secos com óleos da Amazônia.',
     reviews: []
   },
   {
@@ -424,12 +424,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'detox-therapy-kit',
     name: 'Kit Detox Therapy - Desintoxicação',
     brand: 'Mirra Professional',
-    description: 'Tratamento rico em argila verde, gengibre e hortelã.',
+    description: 'Composto por: Shampoo (1L), Máscara de Argila (1kg) e Finalizador (250ml).',
     price: 533.00,
     category: 'CRONOGRAMA CAPILAR',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/detox.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Elimina toxinas, regula a sebosidade e combate a caspa, estimulando o crescimento saudável.',
+    details: 'Tratamento rico em argila verde, gengibre e hortelã. Elimina toxinas e regula a sebosidade.',
     reviews: []
   },
   {
@@ -474,12 +474,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'plastica-capilar-kit',
     name: 'Kit Plástica Capilar - Repositor de Massa',
     brand: 'Mirra Professional',
-    description: 'Repõe minerais, proteínas e nutrientes perdidos no envelhecimento.',
+    description: 'Composto por: Shampoo Cream (1L), Bálsamo (1L), Máscara (1kg) e Serum (60ml).',
     price: 665.00,
     category: 'CRONOGRAMA CAPILAR',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Plastica-Capilar-conjunto.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Reconstrução instantânea de alto impacto que defende os fios de processos oxidativos.',
+    details: 'Repõe minerais e proteínas perdidos. Reconstrução instantânea de alto impacto.',
     reviews: []
   },
   {
@@ -586,12 +586,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'fusion-cmc-kit',
     name: 'Kit Fusion CMC - Reconstituição CMC',
     brand: 'Mirra Professional',
-    description: 'Fusão de aminoácidos para cabelos 98% mais resistentes.',
+    description: 'Composto por: Shampoo Treatment (1L), Therapeutic Balm (1L) e Cream Oil (1L).',
     price: 825.00,
     category: 'RESTAURAÇÃO',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/fusion-cmc2.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Reconstitui a película que protege o córtex através do CMC (Complexo de Membrana Celular).',
+    details: 'Fusão de aminoácidos para cabelos 98% mais resistentes. Reconstitui a película CMC.',
     reviews: []
   },
   {
@@ -636,12 +636,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'capsitrat-kit',
     name: 'Kit Capsitrat - Tratamento Antiqueda',
     brand: 'Maison Visage',
-    description: 'Tecnologia de microchoque folicular.',
+    description: 'Composto por: Shampoo Ativador (250ml), Bálsamo Estimulante (250ml) e Loção Spray (120ml).',
     price: 231.00,
     category: 'TRATAMENTOS',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/capsitrat-todos.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Protocolo completo para saúde do bulbo piloso e controle de queda.',
+    details: 'Tecnologia de microchoque folicular. Protocolo completo para saúde do bulbo piloso.',
     reviews: []
   },
   {
@@ -686,12 +686,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'blond-radiant-kit',
     name: 'Kit Pós Progressiva Blond Radiant',
     brand: 'Mirra Professional',
-    description: 'Manutenção luxuosa para loiras com progressiva.',
+    description: 'Composto por: Shampoo (300ml), Condicionador (300ml), Máscara (300g) e Fluido Matizador (120ml).',
     price: 615.00,
     category: 'TRATAMENTOS',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/todos-mascara-pos-progressiva-pro-Photoroom.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Neutraliza tons amarelados enquanto mantém o liso e a integridade da fibra.',
+    details: 'Manutenção luxuosa para loiras com progressiva. Neutraliza tons amarelados.',
     reviews: []
   },
   {
@@ -760,12 +760,12 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'miss-curls-cocoa',
     name: 'Kit Miss Curls - Cachos Intensos',
     brand: 'Mirra Professional',
-    description: 'Definição e hidratação profunda para curvaturas.',
+    description: 'Composto por: Shampoo (300ml), Condicionador (300ml), Máscara (300g) e Ativador (300ml).',
     price: 600.00,
     category: 'CACHOS PERFEITOS',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/miss-curls-Photoroom.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
-    details: 'Tratamento premium para cachos definidos e livres de frizz.',
+    details: 'Definição e hidratação profunda para curvaturas. Tratamento premium.',
     reviews: []
   },
   {
@@ -786,7 +786,7 @@ export const PRODUCTS_DATA: Product[] = [
     id: 'kit-back-bar',
     name: 'Ultra Hydration - Kit Back Bar',
     brand: 'Mirra Professional',
-    description: 'Kit Profissional de Lavatório 2.5L.',
+    description: 'Composto por: Shampoo (2.5L) e Condicionador (2.5L).',
     price: 198.00,
     category: 'LINHA LAVATÓRIO',
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/ULTRA-HYDRATION-Photoroom-1024x1024.webp',
