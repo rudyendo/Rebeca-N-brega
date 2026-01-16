@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { ShoppingBag, Search, X, ShieldAlert, Award, Microscope, ChevronLeft, LayoutGrid } from 'lucide-react';
+import { ShoppingBag, Search, X, ShieldAlert, Award, Microscope, ChevronLeft, LayoutGrid, Settings, LogOut } from 'lucide-react';
 import { Category, Product, CartItem, Review } from './types';
 import { PRODUCTS_DATA, CATEGORIES, BRANDS, VENDOR_NAME, VENDOR_SUBTITLE } from './constants';
 import ProductCard from './components/ProductCard';
@@ -8,6 +8,8 @@ import CategoryCard from './components/CategoryCard';
 import Cart from './components/Cart';
 import GeminiAssistant from './components/GeminiAssistant';
 import ReviewSection from './components/ReviewSection';
+import Auth from './components/Auth';
+import AdminPanel from './components/AdminPanel';
 
 type ViewMode = 'categories' | 'products';
 
@@ -19,9 +21,34 @@ const App: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [products, setProducts] = useState<Product[]>(PRODUCTS_DATA);
+  
+  // Persistência de Dados via LocalStorage
+  const [products, setProducts] = useState<Product[]>(() => {
+    const saved = localStorage.getItem('products_db');
+    return saved ? JSON.parse(saved) : PRODUCTS_DATA;
+  });
 
-  // Filtro de produtos
+  const [currentUser, setCurrentUser] = useState<any>(() => {
+    const saved = localStorage.getItem('current_session');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [showAuth, setShowAuth] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('products_db', JSON.stringify(products));
+  }, [products]);
+
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('current_session', JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem('current_session');
+    }
+  }, [currentUser]);
+
+  // Filtro de produtos para o catálogo público
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const matchesCategory = activeCategory === 'Todos' || product.category === activeCategory;
@@ -32,7 +59,6 @@ const App: React.FC = () => {
     });
   }, [activeCategory, searchQuery, selectedBrand, products]);
 
-  // Função para mudar para visão de categoria
   const handleSelectCategory = (category: Category) => {
     setActiveCategory(category);
     setViewMode('products');
@@ -75,16 +101,44 @@ const App: React.FC = () => {
     }
   };
 
+  // Funções Administrativas
+  const saveProduct = (product: Product) => {
+    setProducts(prev => {
+      const exists = prev.find(p => p.id === product.id);
+      if (exists) return prev.map(p => p.id === product.id ? product : p);
+      return [product, ...prev];
+    });
+  };
+
+  const deleteProduct = (id: string) => {
+    if (confirm('Deseja realmente remover este produto do catálogo?')) {
+      setProducts(prev => prev.filter(p => p.id !== id));
+    }
+  };
+
   const totalItemsCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <div className="min-h-screen pb-24 bg-[#FDFBF9]">
       {/* Top Bar Profissional */}
-      <div className="bg-[#2D2D2D] py-2 px-4 flex items-center justify-center gap-2 sticky top-0 z-50">
-        <ShieldAlert size={12} className="text-[#C5A059]" />
-        <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-[0.2em] text-center">
-          VENDA EXCLUSIVA PARA PROFISSIONAIS DA BELEZA E SALÕES
-        </p>
+      <div className="bg-[#2D2D2D] py-2 px-4 flex items-center justify-between gap-2 sticky top-0 z-50">
+        <div className="flex-1"></div>
+        <div className="flex items-center gap-2">
+          <ShieldAlert size={12} className="text-[#C5A059]" />
+          <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-[0.2em] text-center">
+            VENDA EXCLUSIVA PARA PROFISSIONAIS DA BELEZA E SALÕES
+          </p>
+        </div>
+        <div className="flex-1 flex justify-end">
+          {currentUser && (
+            <button 
+              onClick={() => setShowAdmin(true)}
+              className="flex items-center gap-2 text-[10px] font-black text-white uppercase tracking-widest hover:text-[#C5A059] transition-colors"
+            >
+              <Settings size={12} /> Painel Admin
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Header */}
@@ -145,8 +199,11 @@ const App: React.FC = () => {
               <h2 className="text-4xl md:text-7xl font-bold mb-6 font-serif leading-[1.1] max-w-2xl">Onde a Ciência encontra o Estilo.</h2>
               <p className="text-sm md:text-lg opacity-80 mb-10 max-w-lg font-medium">Explore nosso catálogo técnico segmentado para facilitar sua gestão de pedidos.</p>
               <div className="flex flex-wrap gap-4">
-                  <button className="bg-gold-gradient text-white px-10 py-4.5 rounded-full text-[10px] font-black shadow-xl hover:opacity-90 active:scale-95 transition-all uppercase tracking-[0.2em]">
-                  Explorar Categorias
+                  <button 
+                    onClick={() => window.scrollTo({ top: 800, behavior: 'smooth' })}
+                    className="bg-gold-gradient text-white px-10 py-4.5 rounded-full text-[10px] font-black shadow-xl hover:opacity-90 active:scale-95 transition-all uppercase tracking-[0.2em]"
+                  >
+                    Explorar Categorias
                   </button>
               </div>
             </div>
@@ -218,32 +275,36 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            {filteredProducts.length === 0 ? (
-              <div className="text-center py-24 bg-white rounded-[48px] border border-dashed border-orange-100">
-                <Search className="mx-auto text-orange-100 mb-6" size={48} />
-                <p className="text-[#2D2D2D] font-bold font-serif text-xl italic mb-2">Nenhum produto encontrado.</p>
-                <button 
-                  onClick={() => setViewMode('categories')}
-                  className="text-[#C5A059] text-[10px] font-black uppercase tracking-widest border-b border-[#C5A059] pb-1"
-                >
-                  Voltar para Categorias
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-10">
-                {filteredProducts.map((product) => (
-                  <ProductCard 
-                    key={product.id} 
-                    product={product} 
-                    onAddToCart={addToCart}
-                    onViewDetails={(p) => setSelectedProduct(p)}
-                  />
-                ))}
-              </div>
-            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-10">
+              {filteredProducts.map((product) => (
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  onAddToCart={addToCart}
+                  onViewDetails={(p) => setSelectedProduct(p)}
+                />
+              ))}
+            </div>
           </div>
         )}
       </main>
+
+      {/* Modais de Gerenciamento e Auth */}
+      {showAuth && (
+        <Auth 
+          onLogin={(user) => { setCurrentUser(user); setShowAuth(false); setShowAdmin(true); }} 
+          onClose={() => setShowAuth(false)} 
+        />
+      )}
+
+      {showAdmin && currentUser && (
+        <AdminPanel 
+          products={products} 
+          onSave={saveProduct} 
+          onDelete={deleteProduct} 
+          onClose={() => setShowAdmin(false)} 
+        />
+      )}
 
       {/* Modal de Detalhes do Produto */}
       {selectedProduct && (
@@ -341,7 +402,30 @@ const App: React.FC = () => {
               Rebeca<span className="text-[#C5A059]">Nóbrega</span>
             </h1>
             <p className="text-[#2D2D2D] text-3xl font-serif italic mb-6">"Beleza que transforma, ciência que cura."</p>
-            <p className="text-gray-400 text-sm max-w-lg mx-auto mb-16 leading-relaxed">Referência em cosméticos de alta performance para cabeleireiros e salões desde 1999.</p>
+            
+            <div className="flex flex-col items-center gap-4 mb-16">
+              <p className="text-gray-400 text-sm max-w-lg mx-auto leading-relaxed">Referência em cosméticos de alta performance para cabeleireiros e salões desde 1999.</p>
+              
+              {!currentUser ? (
+                <button 
+                  onClick={() => setShowAuth(true)}
+                  className="text-[9px] font-black text-[#D8B4A6] uppercase tracking-[0.4em] hover:text-[#C5A059] transition-colors mt-4"
+                >
+                  Acesso Restrito Consultoria
+                </button>
+              ) : (
+                <div className="flex items-center gap-6 mt-4">
+                  <span className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest">Olá, {currentUser.name}</span>
+                  <button 
+                    onClick={() => { setCurrentUser(null); setShowAdmin(false); }}
+                    className="flex items-center gap-1 text-[9px] font-black text-red-400 uppercase tracking-widest hover:text-red-600 transition-colors"
+                  >
+                    <LogOut size={10} /> Sair
+                  </button>
+                </div>
+              )}
+            </div>
+
             <div className="text-[#D8B4A6] text-[9px] font-black uppercase tracking-[0.4em] border-t border-orange-50 pt-12 opacity-60">
                Catálogo Técnico Autorizado • {VENDOR_NAME} • {VENDOR_SUBTITLE}
             </div>
@@ -353,6 +437,8 @@ const App: React.FC = () => {
           from { transform: scale(0.9) translateY(60px); opacity: 0; }
           to { transform: scale(1) translateY(0); opacity: 1; }
         }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </div>
   );
