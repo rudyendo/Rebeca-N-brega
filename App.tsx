@@ -1,40 +1,43 @@
 
-import React, { useState, useMemo } from 'react';
-import { ShoppingBag, Search, Star, X, Filter, SlidersHorizontal, Sparkles, ShieldAlert, Award, Microscope } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { ShoppingBag, Search, X, ShieldAlert, Award, Microscope, ChevronLeft, LayoutGrid } from 'lucide-react';
 import { Category, Product, CartItem, Review } from './types';
 import { PRODUCTS_DATA, CATEGORIES, BRANDS, VENDOR_NAME, VENDOR_SUBTITLE } from './constants';
 import ProductCard from './components/ProductCard';
-import CategoryBar from './components/CategoryBar';
+import CategoryCard from './components/CategoryCard';
 import Cart from './components/Cart';
 import GeminiAssistant from './components/GeminiAssistant';
 import ReviewSection from './components/ReviewSection';
 
+type ViewMode = 'categories' | 'products';
+
 const App: React.FC = () => {
+  const [viewMode, setViewMode] = useState<ViewMode>('categories');
   const [activeCategory, setActiveCategory] = useState<Category>('Todos');
   const [selectedBrand, setSelectedBrand] = useState<string>('Todas');
-  const [priceRange, setPriceRange] = useState<string>('Todos');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [products, setProducts] = useState<Product[]>(PRODUCTS_DATA);
 
+  // Filtro de produtos
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const matchesCategory = activeCategory === 'Todos' || product.category === activeCategory;
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           product.brand.toLowerCase().includes(searchQuery.toLowerCase());
+                           product.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesBrand = selectedBrand === 'Todas' || product.brand === selectedBrand;
-      
-      let matchesPrice = true;
-      if (priceRange === 'Até R$ 100') matchesPrice = product.price <= 100;
-      else if (priceRange === 'R$ 100 - R$ 200') matchesPrice = product.price > 100 && product.price <= 200;
-      else if (priceRange === 'Acima de R$ 200') matchesPrice = product.price > 200;
-
-      return matchesCategory && matchesSearch && matchesBrand && matchesPrice;
+      return matchesCategory && matchesSearch && matchesBrand;
     });
-  }, [activeCategory, searchQuery, selectedBrand, priceRange, products]);
+  }, [activeCategory, searchQuery, selectedBrand, products]);
+
+  // Função para mudar para visão de categoria
+  const handleSelectCategory = (category: Category) => {
+    setActiveCategory(category);
+    setViewMode('products');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const addToCart = (product: Product) => {
     setCartItems(prev => {
@@ -75,8 +78,8 @@ const App: React.FC = () => {
   const totalItemsCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <div className="min-h-screen pb-24">
-      {/* Professional Alert Top Bar */}
+    <div className="min-h-screen pb-24 bg-[#FDFBF9]">
+      {/* Top Bar Profissional */}
       <div className="bg-[#2D2D2D] py-2 px-4 flex items-center justify-center gap-2 sticky top-0 z-50">
         <ShieldAlert size={12} className="text-[#C5A059]" />
         <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-[0.2em] text-center">
@@ -85,35 +88,38 @@ const App: React.FC = () => {
       </div>
 
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-orange-100">
-        <div className="max-w-7xl mx-auto px-4 h-24 flex items-center justify-between">
-          <div className="flex flex-col">
-            <h1 className="text-lg md:text-xl font-black text-[#2D2D2D] tracking-tighter uppercase font-serif">
+      <header className="bg-white border-b border-orange-50 sticky top-10 z-40">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div 
+            className="flex flex-col cursor-pointer" 
+            onClick={() => { setViewMode('categories'); setActiveCategory('Todos'); }}
+          >
+            <h1 className="text-xl font-black text-[#2D2D2D] tracking-tighter uppercase font-serif">
               Rebeca<span className="text-[#C5A059]">Nóbrega</span>
             </h1>
-            <span className="text-[10px] md:text-xs uppercase tracking-[0.1em] text-[#C5A059] font-black">
+            <span className="text-[9px] uppercase tracking-[0.1em] text-[#C5A059] font-black">
               {VENDOR_SUBTITLE}
             </span>
           </div>
           
           <div className="flex items-center gap-4">
             <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
               <input 
                 type="text" 
-                placeholder="Pesquisar portfólio..." 
+                placeholder="Buscar no portfólio..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 rounded-full border border-orange-50 bg-gray-50 focus:outline-none focus:ring-1 focus:ring-[#C5A059] w-48 text-xs"
+                className="pl-9 pr-4 py-2.5 rounded-2xl border border-orange-50 bg-gray-50 focus:outline-none focus:ring-1 focus:ring-[#C5A059] w-56 text-xs font-medium"
               />
             </div>
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 text-[#2D2D2D] hover:text-[#C5A059] transition-colors"
+              className="relative p-2.5 bg-gray-50 rounded-2xl text-[#2D2D2D] hover:text-[#C5A059] transition-all"
             >
-              <ShoppingBag size={24} />
+              <ShoppingBag size={22} />
               {totalItemsCount > 0 && (
-                <span className="absolute top-0 right-0 bg-[#C5A059] text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                <span className="absolute -top-1 -right-1 bg-[#2D2D2D] text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">
                   {totalItemsCount}
                 </span>
               )}
@@ -122,175 +128,197 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Hero Professional */}
-      <section className="px-4 py-6 max-w-7xl mx-auto">
-        <div className="relative h-64 md:h-[450px] rounded-[40px] overflow-hidden shadow-2xl">
-          <img 
-            src="https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1600&auto=format&fit=crop" 
-            className="absolute inset-0 w-full h-full object-cover"
-            alt="Beauty Salon Professional"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col justify-center px-10 text-white">
-            <div className="flex items-center gap-2 mb-2">
-              <Award className="text-[#C5A059]" size={20} />
-              <span className="text-xs font-bold uppercase tracking-widest">Selo de Qualidade Profissional</span>
-            </div>
-            <h2 className="text-4xl md:text-6xl font-bold mb-4 font-serif leading-tight max-w-lg">Ciência e Estética em Alta Performance.</h2>
-            <p className="text-sm md:text-base opacity-90 mb-8 max-w-md">Para profissionais que não aceitam menos que a excelência mundial em seus salões.</p>
-            <div className="flex gap-4">
-                <button className="bg-gold-gradient text-white px-10 py-4 rounded-full text-[10px] font-black w-max shadow-lg active:scale-95 transition-transform uppercase tracking-[0.2em]">
-                Linha Técnica Completa
-                </button>
-                <button className="bg-white/10 backdrop-blur text-white px-10 py-4 rounded-full text-[10px] font-black w-max shadow-lg active:scale-95 transition-transform uppercase tracking-[0.2em] border border-white/20">
-                Ver Protocolos
-                </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Filter Section */}
-      <div className="max-w-7xl mx-auto px-4 mb-4">
-        <div className="flex flex-col md:flex-row gap-4 items-center">
-          <div className="flex gap-3 overflow-x-auto no-scrollbar w-full">
-            <div className="flex items-center gap-2 bg-white px-6 py-3 rounded-full border border-orange-50 shadow-sm shrink-0">
-              <Microscope size={14} className="text-[#C5A059]" />
-              <select 
-                value={selectedBrand} 
-                onChange={(e) => setSelectedBrand(e.target.value)}
-                className="bg-transparent text-[10px] font-black focus:outline-none text-[#2D2D2D] uppercase tracking-widest"
-              >
-                <option value="Todas">Laboratórios</option>
-                {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
-              </select>
-            </div>
-
-            <div className="flex items-center gap-2 bg-white px-6 py-3 rounded-full border border-orange-50 shadow-sm shrink-0">
-              <Filter size={14} className="text-[#C5A059]" />
-              <select 
-                value={priceRange} 
-                onChange={(e) => setPriceRange(e.target.value)}
-                className="bg-transparent text-[10px] font-black focus:outline-none text-[#2D2D2D] uppercase tracking-widest"
-              >
-                <option value="Todos">Faixa de Custo</option>
-                <option value="Até R$ 100">Até R$ 100</option>
-                <option value="R$ 100 - R$ 200">R$ 100 - 200</option>
-                <option value="Acima de R$ 200">Acima de 200</option>
-              </select>
+      {/* Hero Dinâmico */}
+      {viewMode === 'categories' && (
+        <section className="px-6 py-8 max-w-7xl mx-auto">
+          <div className="relative h-72 md:h-[500px] rounded-[48px] overflow-hidden shadow-2xl">
+            <img 
+              src="https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1600&auto=format&fit=crop" 
+              className="absolute inset-0 w-full h-full object-cover"
+              alt="Professional Salon"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col justify-center px-10 text-white">
+              <div className="flex items-center gap-2 mb-3">
+                <Award className="text-[#C5A059]" size={18} />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Curadoria Premium Mirra</span>
+              </div>
+              <h2 className="text-4xl md:text-7xl font-bold mb-6 font-serif leading-[1.1] max-w-2xl">Onde a Ciência encontra o Estilo.</h2>
+              <p className="text-sm md:text-lg opacity-80 mb-10 max-w-lg font-medium">Explore nosso catálogo técnico segmentado para facilitar sua gestão de pedidos.</p>
+              <div className="flex flex-wrap gap-4">
+                  <button className="bg-gold-gradient text-white px-10 py-4.5 rounded-full text-[10px] font-black shadow-xl hover:opacity-90 active:scale-95 transition-all uppercase tracking-[0.2em]">
+                  Explorar Categorias
+                  </button>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      )}
 
-      <CategoryBar activeCategory={activeCategory} onSelectCategory={setActiveCategory} />
+      {/* Conteúdo Principal */}
+      <main className="max-w-7xl mx-auto px-6 py-10">
+        
+        {viewMode === 'categories' ? (
+          /* VISÃO DE CATEGORIAS */
+          <div className="space-y-12 animate-in fade-in duration-700">
+            <div className="flex items-center gap-4">
+              <div className="bg-[#2D2D2D] text-white p-2 rounded-xl">
+                <LayoutGrid size={18} />
+              </div>
+              <h3 className="text-xl font-bold text-[#2D2D2D] font-serif uppercase tracking-widest">Portfólio por Linhas</h3>
+              <div className="h-[1px] flex-grow bg-orange-100"></div>
+            </div>
 
-      {/* Products Grid */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-10">
-          <div className="h-[1px] flex-grow bg-orange-100"></div>
-          <h3 className="text-[10px] font-black text-[#C5A059] uppercase tracking-[0.4em]">
-            Curadoria Especial {VENDOR_NAME}
-          </h3>
-          <div className="h-[1px] flex-grow bg-orange-100"></div>
-        </div>
-
-        {filteredProducts.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-[40px] border border-dashed border-orange-200">
-            <Search className="mx-auto text-orange-100 mb-4" size={40} />
-            <p className="text-[#2D2D2D] font-medium font-serif italic text-lg">Insumo não localizado no inventário técnico.</p>
-            <p className="text-[10px] text-[#D8B4A6] mt-2 font-black uppercase tracking-widest">Contate a Consultora via WhatsApp para encomendas</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {CATEGORIES.map(cat => {
+                const productsInCat = products.filter(p => p.category === cat);
+                if (productsInCat.length === 0) return null;
+                return (
+                  <CategoryCard 
+                    key={cat}
+                    category={cat}
+                    representativeProduct={productsInCat[0]}
+                    productCount={productsInCat.length}
+                    onSelect={handleSelectCategory}
+                  />
+                );
+              })}
+            </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-12">
-            {filteredProducts.map((product) => (
-              <ProductCard 
-                key={product.id} 
-                product={product} 
-                onAddToCart={addToCart}
-                onViewDetails={(p) => setSelectedProduct(p)}
-              />
-            ))}
+          /* VISÃO DE PRODUTOS DA CATEGORIA */
+          <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => setViewMode('categories')}
+                  className="p-3 bg-white border border-orange-100 rounded-full hover:bg-orange-50 text-[#C5A059] transition-all shadow-sm"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <div>
+                  <h3 className="text-3xl font-bold text-[#2D2D2D] font-serif">{activeCategory}</h3>
+                  <p className="text-[10px] font-black text-[#D8B4A6] uppercase tracking-[0.2em] mt-1">
+                    Exibindo {filteredProducts.length} itens localizados
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-orange-50 shadow-sm">
+                  <Microscope size={14} className="text-[#C5A059]" />
+                  <select 
+                    value={selectedBrand} 
+                    onChange={(e) => setSelectedBrand(e.target.value)}
+                    className="bg-transparent text-[10px] font-black focus:outline-none text-[#2D2D2D] uppercase tracking-widest outline-none"
+                  >
+                    <option value="Todas">Todas as Marcas</option>
+                    {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {filteredProducts.length === 0 ? (
+              <div className="text-center py-24 bg-white rounded-[48px] border border-dashed border-orange-100">
+                <Search className="mx-auto text-orange-100 mb-6" size={48} />
+                <p className="text-[#2D2D2D] font-bold font-serif text-xl italic mb-2">Nenhum produto encontrado.</p>
+                <button 
+                  onClick={() => setViewMode('categories')}
+                  className="text-[#C5A059] text-[10px] font-black uppercase tracking-widest border-b border-[#C5A059] pb-1"
+                >
+                  Voltar para Categorias
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-10">
+                {filteredProducts.map((product) => (
+                  <ProductCard 
+                    key={product.id} 
+                    product={product} 
+                    onAddToCart={addToCart}
+                    onViewDetails={(p) => setSelectedProduct(p)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </main>
 
-      {/* Product Detail Modal */}
+      {/* Modal de Detalhes do Produto */}
       {selectedProduct && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-[#2D2D2D]/90 backdrop-blur-md" onClick={() => setSelectedProduct(null)} />
-          <div className="relative bg-white w-full max-w-4xl max-h-[95vh] rounded-[48px] overflow-hidden shadow-2xl animate-[pop_0.4s_cubic-bezier(0.16,1,0.3,1)] flex flex-col">
+          <div className="absolute inset-0 bg-[#2D2D2D]/95 backdrop-blur-xl" onClick={() => setSelectedProduct(null)} />
+          <div className="relative bg-white w-full max-w-5xl max-h-[90vh] rounded-[56px] overflow-hidden shadow-2xl animate-[pop_0.5s_cubic-bezier(0.16,1,0.3,1)] flex flex-col md:flex-row">
             <button 
               onClick={() => setSelectedProduct(null)}
-              className="absolute top-8 right-8 bg-white p-3 rounded-full shadow-lg z-10 hover:rotate-90 transition-transform"
+              className="absolute top-8 right-8 bg-white/20 backdrop-blur p-3 rounded-full shadow-lg z-20 hover:bg-white hover:text-black transition-all"
             >
-              <X size={20} className="text-[#2D2D2D]" />
+              <X size={20} />
             </button>
             
-            <div className="overflow-y-auto flex-grow no-scrollbar">
-              <div className="grid md:grid-cols-2 h-full">
-                <div className="relative h-[400px] md:h-full">
-                    <img src={selectedProduct.imageUrl} className="w-full h-full object-cover" />
-                    <div className="absolute bottom-6 left-6 bg-black/50 backdrop-blur text-white px-4 py-2 rounded-xl text-[9px] font-bold uppercase tracking-widest border border-white/20">
-                        Protocolo de Aplicação Restrito
-                    </div>
+            <div className="md:w-1/2 h-80 md:h-auto relative">
+                <img src={selectedProduct.imageUrl} className="w-full h-full object-cover" alt={selectedProduct.name} />
+                <div className="absolute bottom-8 left-8 bg-black/60 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/20">
+                    <p className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Protocolo Profissional Exclusivo</p>
                 </div>
-                <div className="p-12 overflow-y-auto">
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-[0.2em] bg-orange-50 px-4 py-1.5 rounded-full">
-                      {selectedProduct.brand}
-                    </span>
-                  </div>
-                  <h2 className="text-4xl font-bold mb-6 text-[#2D2D2D] font-serif leading-tight">{selectedProduct.name}</h2>
-                  
-                  <div className="bg-amber-50 border border-amber-100 p-6 rounded-3xl mb-8">
-                    <div className="flex items-center gap-2 mb-2 text-amber-700">
-                      <ShieldAlert size={16} />
-                      <span className="text-[11px] font-black uppercase tracking-[0.2em]">AVISO DE SEGURANÇA TÉCNICA</span>
-                    </div>
-                    <p className="text-[12px] text-amber-900 leading-relaxed font-medium italic">
-                      Este insumo apresenta formulação de alta performance e complexidade. A VENDA É EXCLUSIVA PARA PROFISSIONAIS capacitados que garantam a correta manipulação técnica.
-                    </p>
-                  </div>
+            </div>
 
-                  <p className="text-gray-500 mb-10 text-base leading-relaxed font-medium">
-                    {selectedProduct.details}
-                  </p>
-                  
-                  <div className="flex flex-col gap-8 mb-10">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase tracking-[0.3em] font-black text-[#D8B4A6] mb-2">Cotação Exclusiva para Salão</span>
-                      <span className="text-5xl font-black text-[#2D2D2D] tracking-tighter">R$ {selectedProduct.price.toFixed(2).replace('.', ',')}</span>
-                    </div>
-                    <button 
-                      onClick={() => {
-                        addToCart(selectedProduct);
-                        setSelectedProduct(null);
-                      }}
-                      className="bg-gold-gradient text-white w-full py-5 rounded-3xl font-black text-xs uppercase tracking-[0.4em] shadow-2xl active:scale-95 transition-transform"
-                    >
-                      Reservar Unidades para Salão
-                    </button>
-                  </div>
-
-                  <ReviewSection 
-                    reviews={selectedProduct.reviews} 
-                    onAddReview={(rating, comment) => addReviewToProduct(selectedProduct.id, rating, comment)} 
-                  />
+            <div className="md:w-1/2 p-12 overflow-y-auto no-scrollbar">
+              <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-[0.2em] bg-orange-50 px-4 py-2 rounded-full mb-6 inline-block">
+                {selectedProduct.brand}
+              </span>
+              <h2 className="text-4xl font-bold mb-8 text-[#2D2D2D] font-serif leading-tight">{selectedProduct.name}</h2>
+              
+              <div className="bg-amber-50 border border-amber-100 p-8 rounded-[32px] mb-10">
+                <div className="flex items-center gap-3 mb-3 text-amber-700">
+                  <ShieldAlert size={18} />
+                  <span className="text-[11px] font-black uppercase tracking-[0.2em]">REQUISITO TÉCNICO</span>
                 </div>
+                <p className="text-[13px] text-amber-900 leading-relaxed font-medium italic opacity-80">
+                  Este produto exige aplicação por profissional habilitado. A consultora poderá solicitar o registro profissional para liberação do pedido.
+                </p>
               </div>
+
+              <div className="space-y-6 mb-12">
+                  <p className="text-gray-500 text-base leading-relaxed font-medium">
+                    {selectedProduct.details || selectedProduct.description}
+                  </p>
+              </div>
+              
+              <div className="flex flex-col gap-8 mb-12">
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase tracking-[0.3em] font-black text-[#D8B4A6] mb-2">Cotação p/ Salão</span>
+                  <span className="text-5xl font-black text-[#2D2D2D] tracking-tighter">R$ {selectedProduct.price.toFixed(2).replace('.', ',')}</span>
+                </div>
+                <button 
+                  onClick={() => {
+                    addToCart(selectedProduct);
+                    setSelectedProduct(null);
+                  }}
+                  className="bg-gold-gradient text-white w-full py-5 rounded-[28px] font-black text-xs uppercase tracking-[0.4em] shadow-2xl active:scale-95 transition-all"
+                >
+                  Adicionar ao Pedido Profissional
+                </button>
+              </div>
+
+              <ReviewSection 
+                reviews={selectedProduct.reviews} 
+                onAddReview={(rating, comment) => addReviewToProduct(selectedProduct.id, rating, comment)} 
+              />
             </div>
           </div>
         </div>
       )}
 
-      {/* Cart Mobile */}
-      {totalItemsCount > 0 && (
+      {/* Carrinho Mobile Flutuante */}
+      {totalItemsCount > 0 && !isCartOpen && (
         <button 
           onClick={() => setIsCartOpen(true)}
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[50] bg-[#2D2D2D] text-white px-12 py-6 rounded-full shadow-2xl flex items-center gap-6 active:scale-95 transition-all md:hidden animate-bounce-short border border-[#C5A059]/30"
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[50] bg-[#2D2D2D] text-white px-10 py-5.5 rounded-full shadow-2xl flex items-center gap-5 active:scale-95 transition-all border border-[#C5A059]/30"
         >
-          <ShoppingBag size={22} className="text-[#C5A059]" />
-          <span className="font-black text-[11px] uppercase tracking-[0.3em]">Cotação Profissional</span>
+          <ShoppingBag size={20} className="text-[#C5A059]" />
+          <span className="font-black text-[10px] uppercase tracking-[0.3em]">Minha Reserva</span>
           <span className="bg-[#C5A059] px-3 py-1 rounded-lg text-[10px] font-black">
             {totalItemsCount}
           </span>
@@ -307,16 +335,14 @@ const App: React.FC = () => {
 
       <GeminiAssistant />
 
-      <footer className="mt-24 py-20 border-t border-orange-50 text-center bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-            <div className="mb-8 flex justify-center gap-1">
-                <Star size={18} className="text-[#C5A059]" fill="currentColor" />
-                <Star size={18} className="text-[#D8B4A6]" fill="currentColor" />
-                <Star size={18} className="text-[#C5A059]" fill="currentColor" />
-            </div>
-            <p className="text-[#2D2D2D] text-2xl font-serif italic mb-4">"Ser membro da Mirra é muito mais que uma parceria; é sobre fazer parte da família."</p>
-            <p className="text-gray-400 text-sm max-w-lg mx-auto mb-12">Excelência em cosméticos para profissionais desde 1999.</p>
-            <div className="text-[#D8B4A6] text-[10px] font-black uppercase tracking-[0.5em] border-t border-orange-50 pt-10">
+      <footer className="mt-24 py-24 border-t border-orange-50 text-center bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+            <h1 className="text-2xl font-black text-[#2D2D2D] tracking-tighter uppercase font-serif mb-6">
+              Rebeca<span className="text-[#C5A059]">Nóbrega</span>
+            </h1>
+            <p className="text-[#2D2D2D] text-3xl font-serif italic mb-6">"Beleza que transforma, ciência que cura."</p>
+            <p className="text-gray-400 text-sm max-w-lg mx-auto mb-16 leading-relaxed">Referência em cosméticos de alta performance para cabeleireiros e salões desde 1999.</p>
+            <div className="text-[#D8B4A6] text-[9px] font-black uppercase tracking-[0.4em] border-t border-orange-50 pt-12 opacity-60">
                Catálogo Técnico Autorizado • {VENDOR_NAME} • {VENDOR_SUBTITLE}
             </div>
         </div>
@@ -324,15 +350,8 @@ const App: React.FC = () => {
 
       <style>{`
         @keyframes pop {
-          from { transform: scale(0.9) translateY(40px); opacity: 0; }
+          from { transform: scale(0.9) translateY(60px); opacity: 0; }
           to { transform: scale(1) translateY(0); opacity: 1; }
-        }
-        @keyframes bounce-short {
-          0%, 100% { transform: translate(-50%, 0); }
-          50% { transform: translate(-50%, -10px); }
-        }
-        .animate-bounce-short {
-          animation: bounce-short 4s infinite cubic-bezier(0.45, 0, 0.55, 1);
         }
       `}</style>
     </div>

@@ -13,7 +13,8 @@ export type Category =
   | 'CACHOS PERFEITOS' 
   | 'LINHA LAVATÓRIO' 
   | 'FINALIZADORES' 
-  | 'HOMBRE';
+  | 'HOMBRE'
+  | 'HOME CARE';
 
 export interface Review {
   id: string;
