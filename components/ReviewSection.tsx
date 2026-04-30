@@ -1,16 +1,35 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Review } from '../types';
 import { Star } from 'lucide-react';
+import { db, collection, query, onSnapshot, handleFirestoreError, OperationType } from '../services/firebase';
 
 interface ReviewSectionProps {
-  reviews: Review[];
+  productId: string;
   onAddReview: (rating: number, comment: string) => void;
 }
 
-const ReviewSection: React.FC<ReviewSectionProps> = ({ reviews, onAddReview }) => {
+const ReviewSection: React.FC<ReviewSectionProps> = ({ productId, onAddReview }) => {
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState('');
+
+  useEffect(() => {
+    const path = `products/${productId}/reviews`;
+    const q = query(collection(db, path));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const reviewsList: Review[] = [];
+      snapshot.forEach((doc) => {
+        reviewsList.push({ id: doc.id, ...doc.data() } as Review);
+      });
+      setReviews(reviewsList);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, path);
+    });
+
+    return () => unsubscribe();
+  }, [productId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

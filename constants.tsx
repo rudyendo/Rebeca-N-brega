@@ -38,7 +38,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Elements-_ProteinaLeite-copy-Photoroom.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Tratamento de manutenção diária para restauração profunda pós-química em casa.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-leite-home-shampoo',
@@ -50,7 +51,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Shampoo-proteinas-do-leite.jpg',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '250ml.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-leite-home-cond',
@@ -62,7 +64,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Cond-mask-proteinas-do-leite.jpg',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '250ml.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-leite-home-leavin',
@@ -74,7 +77,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Leavin-proteinas-do-leite.jpg',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '180ml.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-leite-home-masc',
@@ -86,7 +90,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Mask-proteinas-do-leite.jpg',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '250g.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 2. HOME CARE: GINKGO BILOBA ---
@@ -100,7 +105,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Elements-_GingkoAlta_versao001-Photoroom.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Crescimento saudável.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-ginkgo-home-shampoo',
@@ -112,7 +118,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/shampoo-ginkgo-biloba.jpg',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '250ml.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-ginkgo-home-cond',
@@ -124,7 +131,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/cond-mask-ginkgo-biloba.jpg',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '250ml.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-ginkgo-home-leavin',
@@ -136,7 +144,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/leavin-ginkgo-biloba.jpg',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '180ml.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-ginkgo-home-masc',
@@ -148,7 +157,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/mask-ginkgo-biloba.jpg',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '250g.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 3. HOME CARE: TUTANO + CAVIAR ---
@@ -162,7 +172,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/tutano-e-caviar-Photoroom-3-768x768.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Nutrição intensiva.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-tutano-home-shampoo',
@@ -174,7 +185,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/tutano-e-caviar-shampoo-2.jpg',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '250ml.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-tutano-home-cond',
@@ -186,7 +198,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/tutano-e-caviar-cond-e-mask-2.jpg',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '250ml.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-tutano-home-leavin',
@@ -198,7 +211,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/tutano-e-caviar-leavin.jpg',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '180ml.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-tutano-home-masc',
@@ -210,7 +224,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/tutano-e-caviar-mask.jpg',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '250g.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 4. HOME CARE: QUERATINA + KARITÉ ---
@@ -224,7 +239,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Elements-_Queratina.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Reconstrução diária.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-queratina-home-shampoo',
@@ -236,7 +252,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/shampoo-QUERATINA-MANTEIGA-DE-KARITE-2.png',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '250ml.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-queratina-home-cond',
@@ -248,7 +265,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/cond-mask-QUERATINA-MANTEIGA-DE-KARITE-2.png',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '250ml.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-queratina-home-leavin',
@@ -260,7 +278,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/leavin-QUERATINA-MANTEIGA-DE-KARITE.png',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '180ml.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-queratina-home-masc',
@@ -272,7 +291,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/mask-QUERATINA-MANTEIGA-DE-KARITE.png',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '250g.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 5. ACIDIFICANTE ---
@@ -286,7 +306,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/07/Captura-de-tela-de-2025-07-23-17-37-42.png',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '900ml. Acidifica e reconstrói.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 6. ELEMENTS PROFISSIONAL ---
@@ -300,7 +321,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/home.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Uso técnico.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'elements-ginkgo-pro-kit',
@@ -312,7 +334,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/ginkgo-pro-Photoroom-1010x1024.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Uso técnico estimulante.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 7. BIORESTORE ---
@@ -326,7 +349,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Shampoo-total-repair-pro-Photoroom-1024x1024.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Com Cistina e Ojon.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'biorestore-argan',
@@ -338,7 +362,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/pro-1.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Nutrição intensa.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 8. CRONOGRAMA / DETOX ---
@@ -352,7 +377,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/detox.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Argila Verde e Gengibre.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'plastica-capilar',
@@ -364,7 +390,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Plastica-Capilar-conjunto.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Aminoácidos essenciais.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 9. PERFECT BLOND (MATIZADORES) ---
@@ -378,7 +405,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/todos-mascara-pos-progressiva-pro-Photoroom.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Neutraliza tons amarelos.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 10. COLORAÇÕES ---
@@ -392,7 +420,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/coloracao.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '60 nuances disponíveis.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 11. RESTAURAÇÃO ---
@@ -406,7 +435,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/fusion-cmc2.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Reconstituição da película CMC.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 12. REDUTOR DE VOLUME ---
@@ -420,7 +450,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/btx.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Realinhamento capilar.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 13. TRATAMENTOS ---
@@ -434,7 +465,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/capsitrat-todos.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Maison Visage.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 14. CACHOS PERFEITOS ---
@@ -448,7 +480,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/miss-curls-Photoroom.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Hidratação de cachos.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 15. LINHA LAVATÓRIO ---
@@ -462,7 +495,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/ULTRA-HYDRATION-Photoroom-1024x1024.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Economia para o salão.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 16. FINALIZADORES ---
@@ -476,7 +510,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/02/Captura-de-tela-de-2025-07-21-16-15-45.png',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Proteção térmica.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'uniq-pro-bbcream',
@@ -488,7 +523,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/batch_todos-uniq-pro-12-Photoroom.webp',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: '12 benefícios.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
 
   // --- 17. HOMBRE ---
@@ -502,7 +538,8 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/afrodis_shampoo.png',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Fragrância exclusiva.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   },
   {
     id: 'hombre-colonia',
@@ -514,6 +551,7 @@ export const PRODUCTS_DATA: Product[] = [
     imageUrl: 'https://mirracosmeticos.com/wp-content/uploads/2025/03/afrodis_colonia.png',
     ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
     details: 'Longa duração.',
-    reviews: []
+    reviews: [],
+    isVisible: true
   }
 ];

@@ -10,6 +10,22 @@ import GeminiAssistant from './components/GeminiAssistant';
 import ReviewSection from './components/ReviewSection';
 import Auth from './components/Auth';
 import AdminPanel from './components/AdminPanel';
+import { 
+  db, 
+  auth, 
+  onAuthStateChanged, 
+  collection, 
+  getDocs, 
+  setDoc, 
+  doc, 
+  deleteDoc, 
+  addDoc, 
+  serverTimestamp,
+  OperationType,
+  handleFirestoreError,
+  query,
+  onSnapshot
+} from './services/firebase';
 
 type ViewMode = 'categories' | 'products';
 
@@ -22,40 +38,64 @@ const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   
-  // Persistência de Dados via LocalStorage
-  const [products, setProducts] = useState<Product[]>(() => {
-    const saved = localStorage.getItem('products_db');
-    return saved ? JSON.parse(saved) : PRODUCTS_DATA;
-  });
-
-  const [currentUser, setCurrentUser] = useState<any>(() => {
-    const saved = localStorage.getItem('current_session');
-    return saved ? JSON.parse(saved) : null;
-  });
-
+  const [products, setProducts] = useState<Product[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // Monitorar Auth e Dados via Firestore
   useEffect(() => {
-    localStorage.setItem('products_db', JSON.stringify(products));
-  }, [products]);
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
 
-  useEffect(() => {
-    if (currentUser) {
-      localStorage.setItem('current_session', JSON.stringify(currentUser));
-    } else {
-      localStorage.removeItem('current_session');
+    const productsRef = collection(db, 'products');
+    const unsubscribeProducts = onSnapshot(productsRef, (snapshot) => {
+      const productsList: Product[] = [];
+      snapshot.forEach((doc) => {
+        productsList.push({ id: doc.id, ...doc.data() } as Product);
+      });
+      
+      // Se não houver produtos no Firestore, podemos semear com dados iniciais (opcional, mas bom p/ demo)
+      if (productsList.length === 0 && loading) {
+        seedInitialData();
+      } else {
+        setProducts(productsList);
+        setLoading(false);
+      }
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'products');
+    });
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeProducts();
+    };
+  }, []);
+
+  const seedInitialData = async () => {
+    try {
+      for (const product of PRODUCTS_DATA) {
+        const { id, ...data } = product;
+        await setDoc(doc(db, 'products', id), data);
+      }
+    } catch (error) {
+      console.error('Erro ao semear dados:', error);
+    } finally {
+      setLoading(false);
     }
-  }, [currentUser]);
+  };
 
-  // Filtro de produtos para o catálogo público
+  // Filtro de produtos para o catálogo público (Respeita isVisible)
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
+      const isPubliclyVisible = product.isVisible !== false; 
       const matchesCategory = activeCategory === 'Todos' || product.category === activeCategory;
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            product.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesBrand = selectedBrand === 'Todas' || product.brand === selectedBrand;
-      return matchesCategory && matchesSearch && matchesBrand;
+      return isPubliclyVisible && matchesCategory && matchesSearch && matchesBrand;
     });
   }, [activeCategory, searchQuery, selectedBrand, products]);
 
@@ -85,34 +125,38 @@ const App: React.FC = () => {
     setCartItems(prev => prev.filter(item => item.id !== id));
   };
 
-  const addReviewToProduct = (productId: string, rating: number, comment: string) => {
-    const newReview: Review = {
-      id: Math.random().toString(36).substr(2, 9),
-      user: 'Profissional Certificado',
-      rating,
-      comment,
-      date: new Date().toISOString().split('T')[0]
-    };
-    setProducts(prev => prev.map(p => 
-      p.id === productId ? { ...p, reviews: [newReview, ...p.reviews] } : p
-    ));
-    if (selectedProduct?.id === productId) {
-      setSelectedProduct(prev => prev ? { ...prev, reviews: [newReview, ...prev.reviews] } : null);
+  const addReviewToProduct = async (productId: string, rating: number, comment: string) => {
+    const path = `products/${productId}/reviews`;
+    try {
+      await addDoc(collection(db, path), {
+        user: 'Profissional Certificado',
+        rating,
+        comment,
+        date: new Date().toISOString()
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
     }
   };
 
   // Funções Administrativas
-  const saveProduct = (product: Product) => {
-    setProducts(prev => {
-      const exists = prev.find(p => p.id === product.id);
-      if (exists) return prev.map(p => p.id === product.id ? product : p);
-      return [product, ...prev];
-    });
+  const saveProduct = async (product: Product) => {
+    const path = `products/${product.id}`;
+    try {
+      const { id, reviews, ...data } = product; // Removemos reviews daqui pois agora são subcoleção
+      await setDoc(doc(db, 'products', id), data);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
   };
 
-  const deleteProduct = (id: string) => {
-    if (confirm('Deseja realmente remover este produto do catálogo?')) {
-      setProducts(prev => prev.filter(p => p.id !== id));
+  const deleteProduct = async (id: string) => {
+    if (!confirm('Deseja realmente remover este produto do catálogo?')) return;
+    const path = `products/${id}`;
+    try {
+      await deleteDoc(doc(db, 'products', id));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, path);
     }
   };
 
@@ -227,7 +271,7 @@ const App: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {CATEGORIES.map(cat => {
-                const productsInCat = products.filter(p => p.category === cat);
+                const productsInCat = products.filter(p => p.category === cat && p.isVisible !== false);
                 if (productsInCat.length === 0) return null;
                 return (
                   <CategoryCard 
@@ -364,7 +408,7 @@ const App: React.FC = () => {
               </div>
 
               <ReviewSection 
-                reviews={selectedProduct.reviews} 
+                productId={selectedProduct.id} 
                 onAddReview={(rating, comment) => addReviewToProduct(selectedProduct.id, rating, comment)} 
               />
             </div>
@@ -417,7 +461,7 @@ const App: React.FC = () => {
                 <div className="flex items-center gap-6 mt-4">
                   <span className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest">Olá, {currentUser.name}</span>
                   <button 
-                    onClick={() => { setCurrentUser(null); setShowAdmin(false); }}
+                    onClick={() => { auth.signOut(); setCurrentUser(null); setShowAdmin(false); }}
                     className="flex items-center gap-1 text-[9px] font-black text-red-400 uppercase tracking-widest hover:text-red-600 transition-colors"
                   >
                     <LogOut size={10} /> Sair

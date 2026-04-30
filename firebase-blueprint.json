@@ -1,0 +1,43 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "A cosmetic product in the catalog",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "brand": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "ebookUrl": { "type": "string" },
+        "details": { "type": "string" },
+        "isVisible": { "type": "boolean" }
+      },
+      "required": ["name", "brand", "price", "category", "imageUrl"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "A user review for a product",
+      "type": "object",
+      "properties": {
+        "user": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["user", "rating", "comment", "date"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Collection of products"
+    },
+    "/products/{productId}/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Subcollection of reviews for a product"
+    }
+  }
+}

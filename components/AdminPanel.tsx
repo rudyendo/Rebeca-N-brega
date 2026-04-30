@@ -2,18 +2,19 @@
 import React, { useState } from 'react';
 import { Product, Category } from '../types';
 import { CATEGORIES, BRANDS } from '../constants';
-import { Plus, Edit2, Trash2, X, Save, Image, Tag, DollarSign, FileText } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Save, Image, Tag, DollarSign, FileText, Eye, EyeOff } from 'lucide-react';
 
 interface AdminPanelProps {
   products: Product[];
-  onSave: (product: Product) => void;
-  onDelete: (id: string) => void;
+  onSave: (product: Product) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
   onClose: () => void;
 }
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onClose }) => {
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
   const [search, setSearch] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
@@ -30,15 +31,32 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
       imageUrl: '',
       ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
       details: '',
-      reviews: []
+      isVisible: true 
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingProduct) {
-      onSave(editingProduct as Product);
-      setEditingProduct(null);
+      setSaving(true);
+      try {
+        await onSave(editingProduct as Product);
+        setEditingProduct(null);
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao salvar produto.');
+      } finally {
+        setSaving(false);
+      }
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await onDelete(id);
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao excluir produto.');
     }
   };
 
@@ -71,7 +89,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
         </div>
       </header>
 
-      {/* Removido no-scrollbar para permitir visualização da barra de rolagem */}
       <div className="flex-grow overflow-y-auto p-8">
         <div className="max-w-7xl mx-auto pb-20">
           <div className="bg-white rounded-[40px] shadow-sm border border-orange-50 overflow-hidden">
@@ -80,6 +97,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
                 <tr className="bg-gray-50 border-b border-orange-50">
                   <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Produto</th>
                   <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Categoria</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
                   <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Preço</th>
                   <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ações</th>
                 </tr>
@@ -87,7 +105,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
               <tbody className="divide-y divide-orange-50">
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-8 py-20 text-center text-gray-400 italic text-sm">
+                    <td colSpan={5} className="px-8 py-20 text-center text-gray-400 italic text-sm">
                       Nenhum produto encontrado.
                     </td>
                   </tr>
@@ -109,6 +127,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
                         </span>
                       </td>
                       <td className="px-8 py-6">
+                        {p.isVisible !== false ? (
+                          <div className="flex items-center gap-2 text-green-500">
+                             <Eye size={12} />
+                             <span className="text-[9px] font-black uppercase tracking-widest">Publicado</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-gray-300">
+                             <EyeOff size={12} />
+                             <span className="text-[9px] font-black uppercase tracking-widest">Oculto</span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-8 py-6">
                         <p className="font-black text-[#2D2D2D] text-sm">R$ {p.price.toFixed(2)}</p>
                       </td>
                       <td className="px-8 py-6">
@@ -116,7 +147,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
                           <button onClick={() => handleEdit(p)} className="p-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-[#C5A059] hover:text-white transition-all">
                             <Edit2 size={14} />
                           </button>
-                          <button onClick={() => onDelete(p.id)} className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                          <button onClick={() => handleDelete(p.id)} className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all">
                             <Trash2 size={14} />
                           </button>
                         </div>
@@ -144,8 +175,22 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
               </button>
             </div>
 
-            {/* Removido no-scrollbar para o modal também */}
             <div className="p-10 overflow-y-auto space-y-6">
+              <div className="bg-orange-50/50 p-6 rounded-3xl flex items-center justify-between border border-orange-100">
+                 <div>
+                    <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest mb-1">Visibilidade Pública</p>
+                    <p className="text-[11px] text-gray-500 font-medium">Se ativado, o produto aparecerá para todos no catálogo.</p>
+                 </div>
+                 <button 
+                  type="button"
+                  onClick={() => setEditingProduct({...editingProduct, isVisible: !editingProduct.isVisible})}
+                  className={`w-14 h-8 rounded-full relative transition-colors ${editingProduct.isVisible ? 'bg-green-500' : 'bg-gray-200'}`}
+                  disabled={saving}
+                 >
+                    <div className={`absolute top-1 w-6 h-6 bg-white rounded-full shadow-sm transition-all ${editingProduct.isVisible ? 'left-7' : 'left-1'}`} />
+                 </button>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-[#D8B4A6]">Nome Comercial</label>
@@ -153,6 +198,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
                     <Tag className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={14} />
                     <input 
                       required
+                      disabled={saving}
                       value={editingProduct.name}
                       onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
                       className="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]" 
@@ -166,6 +212,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
                     <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={14} />
                     <input 
                       required
+                      disabled={saving}
                       type="number" step="0.01"
                       value={editingProduct.price}
                       onChange={(e) => setEditingProduct({...editingProduct, price: parseFloat(e.target.value) || 0})}
@@ -179,6 +226,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-[#D8B4A6]">Categoria do Catálogo</label>
                   <select 
+                    disabled={saving}
                     value={editingProduct.category}
                     onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value as Category})}
                     className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]"
@@ -189,6 +237,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-[#D8B4A6]">Marca</label>
                   <select 
+                    disabled={saving}
                     value={editingProduct.brand}
                     onChange={(e) => setEditingProduct({...editingProduct, brand: e.target.value})}
                     className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]"
@@ -204,6 +253,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
                   <Image className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={14} />
                   <input 
                     required
+                    disabled={saving}
                     value={editingProduct.imageUrl}
                     onChange={(e) => setEditingProduct({...editingProduct, imageUrl: e.target.value})}
                     className="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]" 
@@ -216,6 +266,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
                 <div className="relative">
                   <FileText className="absolute left-4 top-4 text-gray-300" size={14} />
                   <textarea 
+                    disabled={saving}
                     value={editingProduct.description}
                     onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
                     rows={2}
@@ -227,6 +278,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-[#D8B4A6]">Detalhes Técnicos</label>
                 <textarea 
+                  disabled={saving}
                   value={editingProduct.details}
                   onChange={(e) => setEditingProduct({...editingProduct, details: e.target.value})}
                   rows={4}
@@ -238,9 +290,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, onSave, onDelete, onC
             <div className="p-10 border-t border-orange-50 flex gap-4 shrink-0">
                <button 
                 type="submit"
-                className="flex-grow bg-[#2D2D2D] text-white py-5 rounded-[24px] font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-xl shadow-orange-100 hover:bg-black transition-all"
+                disabled={saving}
+                className="flex-grow bg-[#2D2D2D] text-white py-5 rounded-[24px] font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-xl shadow-orange-100 hover:bg-black transition-all disabled:opacity-50"
               >
-                <Save size={16} /> Salvar Alterações
+                <Save size={16} /> {saving ? 'Salvando...' : 'Salvar Alterações'}
               </button>
             </div>
           </form>

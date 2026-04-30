@@ -13,8 +13,9 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, onViewDetails }) => {
   const [imgSrc, setImgSrc] = useState(product.imageUrl);
 
-  const averageRating = product.reviews.length > 0 
-    ? (product.reviews.reduce((acc, r) => acc + r.rating, 0) / product.reviews.length).toFixed(1)
+  const reviews = product.reviews || [];
+  const averageRating = reviews.length > 0 
+    ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
     : null;
 
   return (

@@ -34,7 +34,8 @@ export interface Product {
   imageUrl: string;
   ebookUrl: string;
   details: string;
-  reviews: Review[];
+  reviews?: Review[];
+  isVisible: boolean; // Nova propriedade
 }
 
 export interface CartItem extends Product {

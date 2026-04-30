@@ -1,6 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { User, Lock, ArrowRight, UserPlus, LogIn, X, ShieldCheck } from 'lucide-react';
+import { auth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../services/firebase';
 
 interface AuthProps {
   onLogin: (user: any) => void;
@@ -8,52 +9,45 @@ interface AuthProps {
 }
 
 const Auth: React.FC<AuthProps> = ({ onLogin, onClose }) => {
-  const [usersExist, setUsersExist] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const hasUsers = users.length > 0;
-    setUsersExist(hasUsers);
-    // Se não existem usuários, força para a tela de cadastro inicial
-    if (!hasUsers) {
-      setIsLogin(false);
-    }
-  }, []);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-
-    if (isLogin) {
-      const user = users.find((u: any) => u.email === email && u.password === password);
-      if (user) {
-        onLogin(user);
+    try {
+      if (isLogin) {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        onLogin(userCredential.user);
       } else {
+        if (!name || !email || !password) {
+          setError('Preencha todos os campos.');
+          setLoading(false);
+          return;
+        }
+        // Nota: Em um app real, o nome seria salvo no profile do usuário
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        onLogin(userCredential.user);
+      }
+    } catch (err: any) {
+      console.error(err);
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
         setError('E-mail ou senha inválidos.');
+      } else if (err.code === 'auth/email-already-in-use') {
+        setError('Este e-mail já está em uso.');
+      } else if (err.code === 'auth/weak-password') {
+        setError('A senha deve ter pelo menos 6 caracteres.');
+      } else {
+        setError('Ocorreu um erro ao processar o acesso.');
       }
-    } else {
-      // Bloqueio de segurança adicional para evitar cadastros extras via manipulação de estado
-      if (users.length > 0) {
-        setError('O cadastro de novos administradores está bloqueado.');
-        return;
-      }
-
-      if (!name || !email || !password) {
-        setError('Preencha todos os campos.');
-        return;
-      }
-
-      const newUser = { name, email, password };
-      users.push(newUser);
-      localStorage.setItem('users', JSON.stringify(users));
-      onLogin(newUser);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,17 +62,15 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onClose }) => {
 
         <div className="p-10 pt-16 text-center">
           <div className="bg-orange-50 w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-6 text-[#C5A059]">
-            {!usersExist ? <ShieldCheck size={28} /> : (isLogin ? <LogIn size={28} /> : <UserPlus size={28} />)}
+            {isLogin ? <LogIn size={28} /> : <UserPlus size={28} />}
           </div>
           
           <h2 className="text-3xl font-bold font-serif text-[#2D2D2D] mb-2">
-            {!usersExist ? 'Acesso Mestre' : (isLogin ? 'Bem-vinda de volta' : 'Nova Conta')}
+            {isLogin ? 'Bem-vinda de volta' : 'Nova Conta'}
           </h2>
           
           <p className="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-8">
-            {!usersExist 
-              ? 'Configure sua credencial única de acesso' 
-              : 'Painel Restrito à Consultoria'}
+            Painel Restrito à Consultoria
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -91,6 +83,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onClose }) => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 border border-transparent focus:border-[#C5A059] outline-none text-sm transition-all"
+                  disabled={loading}
                 />
               </div>
             )}
@@ -102,6 +95,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onClose }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 border border-transparent focus:border-[#C5A059] outline-none text-sm transition-all"
+                disabled={loading}
               />
             </div>
             <div className="relative">
@@ -112,6 +106,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onClose }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 border border-transparent focus:border-[#C5A059] outline-none text-sm transition-all"
+                disabled={loading}
               />
             </div>
 
@@ -119,24 +114,21 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onClose }) => {
 
             <button 
               type="submit"
-              className="w-full bg-gold-gradient text-white py-5 rounded-[24px] font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-xl shadow-orange-100 hover:opacity-95 transition-all"
+              disabled={loading}
+              className="w-full bg-gold-gradient text-white py-5 rounded-[24px] font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 shadow-xl shadow-orange-100 hover:opacity-95 transition-all disabled:opacity-50"
             >
-              {!usersExist ? 'Criar Acesso Mestre' : (isLogin ? 'Entrar no Sistema' : 'Cadastrar')}
-              <ArrowRight size={16} />
+              {loading ? 'Processando...' : (isLogin ? 'Entrar no Sistema' : 'Cadastrar Acesso')}
+              {!loading && <ArrowRight size={16} />}
             </button>
           </form>
 
-          {/* O link de alternância só aparece se NÃO houver usuários ainda ou se quisermos permitir múltiplos (removido conforme pedido) */}
           <div className="mt-8 pt-8 border-t border-gray-100 text-center">
-            {usersExist ? (
-               <p className="text-[9px] font-black uppercase tracking-widest text-gray-300">
-                Sistema de segurança ativo: Cadastro bloqueado
-              </p>
-            ) : (
-              <p className="text-[9px] font-black uppercase tracking-widest text-[#C5A059]">
-                Configuração inicial de segurança
-              </p>
-            )}
+            <button 
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-[9px] font-black uppercase tracking-widest text-[#C5A059] hover:underline"
+            >
+              {isLogin ? 'Não tem acesso? Solicite cadastro' : 'Já tem conta? Faça login'}
+            </button>
           </div>
         </div>
       </div>

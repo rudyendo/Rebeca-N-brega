@@ -1,5 +1,6 @@
 {
   "name": "Rebeca Nóbrega - Cosméticos Premium",
   "description": "Um catálogo digital elegante e mobile-first para produtos de cosméticos, com integração direta para pedidos via WhatsApp e assistente de beleza inteligente.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "majorCapabilities": []
 }
