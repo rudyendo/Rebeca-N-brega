@@ -38,11 +38,11 @@ const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(PRODUCTS_DATA);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [isFirebaseSyncing, setIsFirebaseSyncing] = useState(true);
 
   // Monitorar Auth e Dados via Firestore
   useEffect(() => {
@@ -57,15 +57,16 @@ const App: React.FC = () => {
         productsList.push({ id: doc.id, ...doc.data() } as Product);
       });
       
-      // Se não houver produtos no Firestore, podemos semear com dados iniciais (opcional, mas bom p/ demo)
-      if (productsList.length === 0 && loading) {
-        seedInitialData();
-      } else {
+      if (productsList.length > 0) {
         setProducts(productsList);
-        setLoading(false);
+        setIsFirebaseSyncing(false);
+      } else {
+        // Se realmente não houver nada no Firestore, semeamos
+        seedInitialData();
       }
     }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'products');
+      console.warn("Dificuldade ao sincronizar com servidor, usando cache local.");
+      setIsFirebaseSyncing(false);
     });
 
     return () => {
@@ -83,7 +84,7 @@ const App: React.FC = () => {
     } catch (error) {
       console.error('Erro ao semear dados:', error);
     } finally {
-      setLoading(false);
+      setIsFirebaseSyncing(false);
     }
   };
 

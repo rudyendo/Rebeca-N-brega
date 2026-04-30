@@ -1,20 +1,8 @@
 
 export type Category = 
   | 'Todos' 
-  | 'ACIDIFICANTE' 
-  | 'ELEMENTS' 
-  | 'BIORESTORE' 
-  | 'CRONOGRAMA CAPILAR' 
-  | 'PERFECT BLOND' 
-  | 'COLORAÇÕES' 
-  | 'RESTAURAÇÃO' 
-  | 'REDUTOR DE VOLUME' 
-  | 'TRATAMENTOS' 
-  | 'CACHOS PERFEITOS' 
-  | 'LINHA LAVATÓRIO' 
-  | 'FINALIZADORES' 
-  | 'HOMBRE'
-  | 'HOME CARE';
+  | 'HOME CARE'
+  | 'PROFISSIONAL';
 
 export interface Review {
   id: string;
