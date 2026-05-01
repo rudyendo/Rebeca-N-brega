@@ -7,7 +7,7 @@ import { Plus, Edit2, Trash2, X, Save, Image, Tag, DollarSign, FileText, Eye, Ey
 interface AdminPanelProps {
   products: Product[];
   lines: { id: string; name: string; isVisible: boolean }[];
-  categories: { id: string; name: string; isVisible: boolean }[];
+  categories: { id: string; name: string; isVisible: boolean; line?: string }[];
   onSave: (product: Product) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onSaveLine: (line: any) => Promise<void>;
@@ -35,14 +35,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   };
 
   const handleCreateProduct = () => {
+    const defaultLine = lines[0]?.name || 'PROFISSIONAL';
+    const defaultCategory = categories.find(c => c.line === defaultLine)?.name || '';
+
     setEditingProduct({
       id: Math.random().toString(36).substr(2, 9),
       name: '',
       brand: BRANDS[0],
       description: '',
       price: 0,
-      line: lines[0]?.name || 'PROFISSIONAL',
-      category: categories[0]?.name || 'ACIDIFICANTE',
+      line: defaultLine as any,
+      category: defaultCategory as any,
       imageUrl: '',
       ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
       details: '',
@@ -411,9 +414,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                   <input 
                     required
                     disabled={saving}
-                    type="number" step="0.01"
-                    value={editingProduct.price}
-                    onChange={(e) => setEditingProduct({...editingProduct, price: parseFloat(e.target.value) || 0})}
+                    type="text"
+                    inputMode="numeric"
+                    value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(editingProduct.price || 0)}
+                    onChange={(e) => {
+                      // Remove tudo que não for dígito
+                      const rawValue = e.target.value.replace(/\D/g, '');
+                      // Converte para centavos e depois para reais (float)
+                      const centsValue = parseInt(rawValue || '0', 10);
+                      setEditingProduct({...editingProduct, price: centsValue / 100});
+                    }}
                     className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]" 
                   />
                 </div>
@@ -436,7 +446,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                   <select 
                     disabled={saving}
                     value={editingProduct.line}
-                    onChange={(e) => setEditingProduct({...editingProduct, line: e.target.value as any})}
+                    onChange={(e) => {
+                      const newLine = e.target.value;
+                      const firstCat = sortedCategories.find(c => c.line === newLine)?.name || '';
+                      setEditingProduct({...editingProduct, line: newLine as any, category: firstCat as any});
+                    }}
                     className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]"
                   >
                     {sortedLines.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
@@ -450,7 +464,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                     onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value as any})}
                     className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]"
                   >
-                    {sortedCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                    {sortedCategories.filter(c => c.line === editingProduct.line).map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                   </select>
                 </div>
               </div>
