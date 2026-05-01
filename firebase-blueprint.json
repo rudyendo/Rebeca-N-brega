@@ -36,9 +36,10 @@
       "properties": {
         "name": { "type": "string" },
         "imageUrl": { "type": "string" },
+        "line": { "type": "string" },
         "isVisible": { "type": "boolean" }
       },
-      "required": ["name"]
+      "required": ["name", "line"]
     }
   },
   "firestore": {

@@ -71,7 +71,7 @@ const App: React.FC = () => {
         setProducts(PRODUCTS_DATA);
         setIsFirebaseSyncing(false);
         // Tenta migrar se o usuário for admin
-        if (currentUser?.email === 'rudyendo@gmail.com') {
+        if (currentUser?.email === 'rudyendo@gmail.com' || currentUser?.email === 'rebecalorena73@gmail.com') {
           seedInitialData();
         }
       } else {
@@ -88,7 +88,7 @@ const App: React.FC = () => {
       });
       setLines(linesList);
       if (linesList.length === 0 && isInitialLoad.current && !isSeeding.current) {
-        if (currentUser?.email === 'rudyendo@gmail.com') {
+        if (currentUser?.email === 'rudyendo@gmail.com' || currentUser?.email === 'rebecalorena73@gmail.com') {
           seedLinesAndCategories();
         }
       }
@@ -114,10 +114,30 @@ const App: React.FC = () => {
   const seedLinesAndCategories = async () => {
     try {
       for (const line of LINES) {
-        await setDoc(doc(db, 'lines', line.toLowerCase().replace(/\s+/g, '-')), { name: line, isVisible: true });
+        await setDoc(doc(db, 'lines', line.toLowerCase().replace(/\s+/g, '-')), { 
+          name: line, 
+          isVisible: true,
+          imageUrl: line === 'PROFISSIONAL' 
+            ? "https://mirracosmeticos.com/wp-content/uploads/2025/02/pro-1.webp" 
+            : "https://mirracosmeticos.com/wp-content/uploads/2025/02/Elements-_ProteinaLeite-copy-Photoroom.webp"
+        });
       }
-      for (const cat of CATEGORIES) {
-        await setDoc(doc(db, 'categories', cat.toLowerCase().replace(/\s+/g, '-')), { name: cat, isVisible: true });
+      
+      // Categorias solicitadas para a linha Profissional
+      const profCategories = [
+        'Acidificante', 'Biorestore', 'Colorações', 'Cronograma Capilar', 
+        'Elements', 'Finalizadores', 'Finalizadores e Tratamentos', 
+        'Hombre', 'Lavatório', 'Manutenção', 'Nutrição', 'Perfect Blond', 
+        'RESTAURAÇÃO E NUTRIÇÃO', 'Transformação', 'Tratamentos'
+      ];
+
+      for (const catName of profCategories) {
+        const id = catName.toLowerCase().replace(/\s+/g, '-');
+        await setDoc(doc(db, 'categories', id), { 
+          name: catName, 
+          line: 'PROFISSIONAL',
+          isVisible: true 
+        });
       }
     } catch (e) {
       console.error('Error seeding lines/categories:', e);
@@ -186,9 +206,17 @@ const App: React.FC = () => {
   }, [lines]);
 
   const availableCategories = useMemo(() => {
-    const activeCatNames = categories.filter(c => c.isVisible !== false).map(c => c.name);
-    return activeCatNames.length > 0 ? activeCatNames : CATEGORIES;
-  }, [categories]);
+    // Se não houver nada no Firestore ainda, usa as constantes
+    if (categories.length === 0) return CATEGORIES;
+
+    return categories
+      .filter(c => {
+        const isVisible = c.isVisible !== false;
+        const matchesLine = activeLine === 'Todas' || c.line === activeLine || !c.line;
+        return isVisible && matchesLine;
+      })
+      .map(c => c.name);
+  }, [categories, activeLine]);
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
@@ -297,7 +325,8 @@ const App: React.FC = () => {
       await setDoc(doc(db, 'categories', cat.id), { 
         name: cat.name, 
         isVisible: cat.isVisible,
-        imageUrl: cat.imageUrl || ''
+        imageUrl: cat.imageUrl || '',
+        line: cat.line || ''
       });
     } catch (e) {
       handleFirestoreError(e, OperationType.WRITE, path);
@@ -379,34 +408,7 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Hero Dinâmico */}
-      {viewMode === 'categories' && (
-        <section className="px-6 py-8 max-w-7xl mx-auto">
-          <div className="relative h-72 md:h-[500px] rounded-[48px] overflow-hidden shadow-2xl">
-            <img 
-              src="https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1600&auto=format&fit=crop" 
-              className="absolute inset-0 w-full h-full object-cover"
-              alt="Professional Salon"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col justify-center px-10 text-white">
-              <div className="flex items-center gap-2 mb-3">
-                <Award className="text-[#C5A059]" size={18} />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Curadoria Premium Mirra</span>
-              </div>
-              <h2 className="text-4xl md:text-7xl font-bold mb-6 font-serif leading-[1.1] max-w-2xl">Onde a Ciência encontra o Estilo.</h2>
-              <p className="text-sm md:text-lg opacity-80 mb-10 max-w-lg font-medium">Explore nosso catálogo técnico segmentado para facilitar sua gestão de pedidos.</p>
-              <div className="flex flex-wrap gap-4">
-                  <button 
-                    onClick={() => window.scrollTo({ top: 800, behavior: 'smooth' })}
-                    className="bg-gold-gradient text-white px-10 py-4.5 rounded-full text-[10px] font-black shadow-xl hover:opacity-90 active:scale-95 transition-all uppercase tracking-[0.2em]"
-                  >
-                    Explorar Categorias
-                  </button>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+
 
       {/* Conteúdo Principal */}
       <main className="max-w-7xl mx-auto px-6 py-10 min-h-[400px]">

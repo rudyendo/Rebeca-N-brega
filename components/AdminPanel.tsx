@@ -74,7 +74,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const handleCreateItem = (type: 'line' | 'category') => {
     setEditingItem({ 
       type, 
-      data: { id: Math.random().toString(36).substr(2, 9), name: '', isVisible: true } 
+      data: { 
+        id: Math.random().toString(36).substr(2, 9), 
+        name: '', 
+        isVisible: true,
+        line: type === 'category' ? (lines[0]?.name || 'PROFISSIONAL') : undefined
+      } 
     });
   };
 
@@ -327,7 +332,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="font-bold text-[#2D2D2D] text-sm">{cat.name}</p>
-                                {cat.isVisible === false && <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Oculta no App</span>}
+                                <div className="flex gap-2 items-center">
+                                  {cat.line && <span className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest">{cat.line}</span>}
+                                  {cat.isVisible === false && <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Oculta</span>}
+                                </div>
                               </div>
                               <div className="flex gap-2">
                                 <button onClick={() => handleEditItem('category', cat)} className="p-2 text-gray-400 hover:text-[#C5A059] transition-all">
@@ -522,6 +530,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                   className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]" 
                 />
               </div>
+
+              {editingItem.type === 'category' && (
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-[#D8B4A6]">Vincular à Linha</label>
+                  <select 
+                    disabled={saving}
+                    value={editingItem.data.line || ''}
+                    onChange={(e) => setEditingItem({ ...editingItem, data: { ...editingItem.data, line: e.target.value } })}
+                    className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]"
+                  >
+                    <option value="">Selecione uma linha</option>
+                    {lines.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
+                  </select>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-[#D8B4A6]">URL da Imagem</label>

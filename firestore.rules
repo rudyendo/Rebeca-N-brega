@@ -12,9 +12,11 @@ service cloud.firestore {
     }
     
     function isAdmin() {
-      // In a real app, you'd check a user's role or email. 
-      // For this environment, we'll allow the authenticated user who set up the app.
-      return isSignedIn() && (request.auth.token.email == 'rudyendo@gmail.com');
+      // Allow the app creator and the consultant user identified in logs
+      return isSignedIn() && (
+        request.auth.token.email == 'rudyendo@gmail.com' || 
+        request.auth.token.email == 'rebecalorena73@gmail.com'
+      );
     }
 
     // Products
