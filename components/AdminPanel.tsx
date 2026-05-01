@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Product, Category, ProductLine } from '../types';
 import { CATEGORIES, BRANDS, LINES } from '../constants';
-import { Plus, Edit2, Trash2, X, Save, Image, Tag, DollarSign, FileText, Eye, EyeOff, LayoutGrid, ChevronLeft, Search } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Save, Image, Tag, DollarSign, FileText, Eye, EyeOff, LayoutGrid, ChevronLeft, Search, Copy } from 'lucide-react';
 
 interface AdminPanelProps {
   products: Product[];
@@ -34,6 +34,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   // Handlers para Produtos
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
+  };
+
+  const handleDuplicateProduct = (product: Product) => {
+    const duplicated: Product = {
+      ...product,
+      id: Math.random().toString(36).substr(2, 9),
+      name: `${product.name} (Cópia)`,
+      isVisible: false // Let the user review before publishing
+    };
+    setEditingProduct(duplicated);
   };
 
   const handleCreateProduct = () => {
@@ -276,10 +286,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                           </td>
                           <td className="px-8 py-6">
                             <div className="flex gap-2">
-                              <button onClick={() => handleEditProduct(p)} className="p-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-[#C5A059] hover:text-white transition-all">
+                              <button onClick={() => handleEditProduct(p)} title="Editar" className="p-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-[#C5A059] hover:text-white transition-all">
                                 <Edit2 size={14} />
                               </button>
-                              <button onClick={() => setConfirmDelete({ id: p.id, type: 'product' })} className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                              <button onClick={() => handleDuplicateProduct(p)} title="Duplicar" className="p-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-[#D8B4A6] hover:text-white transition-all">
+                                <Copy size={14} />
+                              </button>
+                              <button onClick={() => setConfirmDelete({ id: p.id, type: 'product' })} title="Excluir" className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all">
                                 <Trash2 size={14} />
                               </button>
                             </div>
