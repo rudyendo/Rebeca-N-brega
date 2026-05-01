@@ -1,8 +1,22 @@
 
+export type ProductLine = 'PROFISSIONAL' | 'HOME CARE';
+
 export type Category = 
-  | 'Todos' 
-  | 'HOME CARE'
-  | 'PROFISSIONAL';
+  | 'ACIDIFICANTE' 
+  | 'BIORESTORE' 
+  | 'COLORAÇÕES' 
+  | 'CRONOGRAMA CAPILAR' 
+  | 'ELEMENTS' 
+  | 'FINALIZADORES' 
+  | 'FINALIZADORES E TRATAMENTOS' 
+  | 'HOMBRE'
+  | 'LAVATÓRIO'
+  | 'MANUTENÇÃO'
+  | 'NUTRIÇÃO'
+  | 'PERFECT BLOND' 
+  | 'RESTAURAÇÃO E NUTRIÇÃO' 
+  | 'TRANSFORMAÇÃO'
+  | 'TRATAMENTOS';
 
 export interface Review {
   id: string;
@@ -15,15 +29,16 @@ export interface Review {
 export interface Product {
   id: string;
   name: string;
+  line: ProductLine;
+  category: Category;
   brand: string;
   description: string;
   price: number;
-  category: Category;
   imageUrl: string;
   ebookUrl: string;
   details: string;
   reviews?: Review[];
-  isVisible: boolean; // Nova propriedade
+  isVisible: boolean; 
 }
 
 export interface CartItem extends Product {

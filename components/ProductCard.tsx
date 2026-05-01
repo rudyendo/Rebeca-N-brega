@@ -27,8 +27,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, onViewD
           onError={() => setImgSrc(FALLBACK_IMAGE)}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        <div className="absolute top-5 left-5 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-[9px] font-black text-[#2D2D2D] uppercase tracking-widest shadow-sm">
-          {product.brand}
+        <div className="absolute top-5 left-5 flex flex-col gap-2">
+          <div className="bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-[9px] font-black text-[#2D2D2D] uppercase tracking-widest shadow-sm w-fit">
+            {product.brand}
+          </div>
+          <div className="bg-[#2D2D2D]/90 backdrop-blur px-3 py-1.5 rounded-full text-[9px] font-black text-[#C5A059] uppercase tracking-widest shadow-sm w-fit border border-[#C5A059]/30">
+            {product.category}
+          </div>
         </div>
         {averageRating && (
           <div className="absolute top-5 right-5 bg-[#C5A059] px-2.5 py-1 rounded-full text-[10px] font-black text-white flex items-center gap-1 shadow-lg">

@@ -2,42 +2,57 @@
   "entities": {
     "Product": {
       "title": "Product",
-      "description": "A cosmetic product in the catalog",
+      "description": "Hair product sold at the salon",
       "type": "object",
       "properties": {
         "name": { "type": "string" },
+        "line": { "type": "string" },
+        "category": { "type": "string" },
         "brand": { "type": "string" },
         "description": { "type": "string" },
         "price": { "type": "number" },
-        "category": { "type": "string" },
         "imageUrl": { "type": "string" },
         "ebookUrl": { "type": "string" },
         "details": { "type": "string" },
         "isVisible": { "type": "boolean" }
       },
-      "required": ["name", "brand", "price", "category", "imageUrl"]
+      "required": ["name", "line", "category", "price", "imageUrl"]
     },
-    "Review": {
-      "title": "Review",
-      "description": "A user review for a product",
+    "Line": {
+      "title": "Product Line",
+      "description": "High level grouping for products",
       "type": "object",
       "properties": {
-        "user": { "type": "string" },
-        "rating": { "type": "number" },
-        "comment": { "type": "string" },
-        "date": { "type": "string", "format": "date-time" }
+        "name": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "isVisible": { "type": "boolean" }
       },
-      "required": ["user", "rating", "comment", "date"]
+      "required": ["name"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Technical grouping for products",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "isVisible": { "type": "boolean" }
+      },
+      "required": ["name"]
     }
   },
   "firestore": {
     "/products/{productId}": {
       "schema": "Product",
-      "description": "Collection of products"
+      "description": "Collection of hair products"
     },
-    "/products/{productId}/reviews/{reviewId}": {
-      "schema": "Review",
-      "description": "Subcollection of reviews for a product"
+    "/lines/{lineId}": {
+      "schema": "Line",
+      "description": "Collection of product lines"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Collection of product categories"
     }
   }
 }

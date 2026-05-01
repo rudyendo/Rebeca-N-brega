@@ -7,10 +7,11 @@ interface CategoryCardProps {
   category: Category;
   representativeProduct: Product;
   productCount: number;
+  imageUrl?: string;
   onSelect: (category: Category) => void;
 }
 
-const CategoryCard: React.FC<CategoryCardProps> = ({ category, representativeProduct, productCount, onSelect }) => {
+const CategoryCard: React.FC<CategoryCardProps> = ({ category, representativeProduct, productCount, imageUrl, onSelect }) => {
   return (
     <button 
       onClick={() => onSelect(category)}
@@ -18,7 +19,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, representativePro
     >
       {/* Imagem de Fundo */}
       <img 
-        src={representativeProduct.imageUrl} 
+        src={imageUrl || representativeProduct.imageUrl} 
         alt={category} 
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-80 group-hover:opacity-100"
       />

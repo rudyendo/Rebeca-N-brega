@@ -1,8 +1,8 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { ShoppingBag, Search, X, ShieldAlert, Award, Microscope, ChevronLeft, LayoutGrid, Settings, LogOut } from 'lucide-react';
-import { Category, Product, CartItem, Review } from './types';
-import { PRODUCTS_DATA, CATEGORIES, BRANDS, VENDOR_NAME, VENDOR_SUBTITLE } from './constants';
+import { Category, Product, CartItem, Review, ProductLine } from './types';
+import { PRODUCTS_DATA, CATEGORIES, BRANDS, LINES, VENDOR_NAME, VENDOR_SUBTITLE } from './constants';
 import ProductCard from './components/ProductCard';
 import CategoryCard from './components/CategoryCard';
 import Cart from './components/Cart';
@@ -27,24 +27,28 @@ import {
   onSnapshot
 } from './services/firebase';
 
-type ViewMode = 'categories' | 'products';
+type ViewMode = 'lines' | 'categories' | 'products';
 
 const App: React.FC = () => {
-  const [viewMode, setViewMode] = useState<ViewMode>('categories');
-  const [activeCategory, setActiveCategory] = useState<Category>('Todos');
+  const [viewMode, setViewMode] = useState<ViewMode>('lines');
+  const [activeLine, setActiveLine] = useState<ProductLine | 'Todas'>('Todas');
+  const [activeCategory, setActiveCategory] = useState<Category | 'Todas'>('Todas');
   const [selectedBrand, setSelectedBrand] = useState<string>('Todas');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   
-  const [products, setProducts] = useState<Product[]>(PRODUCTS_DATA);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [lines, setLines] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [isFirebaseSyncing, setIsFirebaseSyncing] = useState(true);
+  const isInitialLoad = React.useRef(true);
+  const isSeeding = React.useRef(false);
 
-  // Monitorar Auth e Dados via Firestore
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
@@ -54,51 +58,154 @@ const App: React.FC = () => {
     const unsubscribeProducts = onSnapshot(productsRef, (snapshot) => {
       const productsList: Product[] = [];
       snapshot.forEach((doc) => {
-        productsList.push({ id: doc.id, ...doc.data() } as Product);
+        const data = doc.data() as Product;
+        productsList.push({ id: doc.id, ...data } as Product);
       });
       
       if (productsList.length > 0) {
         setProducts(productsList);
         setIsFirebaseSyncing(false);
+        isInitialLoad.current = false;
+      } else if (isInitialLoad.current && !isSeeding.current) {
+        // Se estiver vazio, usa os dados constantes como fallback visual
+        setProducts(PRODUCTS_DATA);
+        setIsFirebaseSyncing(false);
+        // Tenta migrar se o usuário for admin
+        if (currentUser?.email === 'rudyendo@gmail.com') {
+          seedInitialData();
+        }
       } else {
-        // Se realmente não houver nada no Firestore, semeamos
-        seedInitialData();
+        setProducts(PRODUCTS_DATA);
+        setIsFirebaseSyncing(false);
       }
-    }, (error) => {
-      console.warn("Dificuldade ao sincronizar com servidor, usando cache local.");
-      setIsFirebaseSyncing(false);
+    });
+
+    const linesRef = collection(db, 'lines');
+    const unsubscribeLines = onSnapshot(linesRef, (snapshot) => {
+      const linesList: any[] = [];
+      snapshot.forEach((doc) => {
+        linesList.push({ id: doc.id, ...doc.data() });
+      });
+      setLines(linesList);
+      if (linesList.length === 0 && isInitialLoad.current && !isSeeding.current) {
+        if (currentUser?.email === 'rudyendo@gmail.com') {
+          seedLinesAndCategories();
+        }
+      }
+    });
+
+    const categoriesRef = collection(db, 'categories');
+    const unsubscribeCategories = onSnapshot(categoriesRef, (snapshot) => {
+      const categoriesList: any[] = [];
+      snapshot.forEach((doc) => {
+        categoriesList.push({ id: doc.id, ...doc.data() });
+      });
+      setCategories(categoriesList);
     });
 
     return () => {
       unsubscribeAuth();
       unsubscribeProducts();
+      unsubscribeLines();
+      unsubscribeCategories();
     };
   }, []);
 
-  const seedInitialData = async () => {
+  const seedLinesAndCategories = async () => {
     try {
-      for (const product of PRODUCTS_DATA) {
-        const { id, ...data } = product;
-        await setDoc(doc(db, 'products', id), data);
+      for (const line of LINES) {
+        await setDoc(doc(db, 'lines', line.toLowerCase().replace(/\s+/g, '-')), { name: line, isVisible: true });
       }
-    } catch (error) {
-      console.error('Erro ao semear dados:', error);
-    } finally {
-      setIsFirebaseSyncing(false);
+      for (const cat of CATEGORIES) {
+        await setDoc(doc(db, 'categories', cat.toLowerCase().replace(/\s+/g, '-')), { name: cat, isVisible: true });
+      }
+    } catch (e) {
+      console.error('Error seeding lines/categories:', e);
     }
   };
 
-  // Filtro de produtos para o catálogo público (Respeita isVisible)
+  const seedInitialData = async () => {
+    if (isSeeding.current) return;
+    isSeeding.current = true;
+    try {
+      console.log('Migrando dados locais para o Firestore...');
+      
+      // Recupera produtos do LocalStorage para não perder dados anteriores
+      const saved = localStorage.getItem('products_db');
+      const localProducts: Product[] = saved ? JSON.parse(saved) : [];
+      
+      // Combina dados locais com os dados constantes, priorizando os locais por ID
+      const productsToSeed = [...localProducts];
+      PRODUCTS_DATA.forEach(p => {
+        if (!productsToSeed.find(lp => lp.id === p.id)) {
+          productsToSeed.push(p);
+        }
+      });
+
+      for (const product of productsToSeed) {
+        const { id, reviews, ...data } = product; 
+        
+        // Salva o produto
+        await setDoc(doc(db, 'products', id), { 
+          ...data, 
+          isVisible: data.isVisible !== undefined ? data.isVisible : true 
+        });
+
+        // Migra avaliações legadas se existirem no objeto do produto
+        if (reviews && Array.isArray(reviews) && reviews.length > 0) {
+          console.log(`Migrando ${reviews.length} avaliações para o produto ${id}`);
+          for (const review of reviews) {
+            const reviewId = review.id || Math.random().toString(36).substr(2, 9);
+            await setDoc(doc(db, `products/${id}/reviews`, reviewId), {
+              user: review.user,
+              rating: review.rating,
+              comment: review.comment,
+              date: review.date || new Date().toISOString()
+            });
+          }
+        }
+      }
+      
+      // Limpa o storage local após migração bem-sucedida
+      localStorage.removeItem('products_db');
+      console.log('Migração concluída com sucesso.');
+      
+    } catch (error) {
+      console.error('Erro ao migrar dados:', error);
+    } finally {
+      setIsFirebaseSyncing(false);
+      isSeeding.current = false;
+      isInitialLoad.current = false;
+    }
+  };
+
+  // Filtro de produtos para o catálogo público (Respeita isVisible e filtros de Admin)
+  const availableLines = useMemo(() => {
+    const activeLineNames = lines.filter(l => l.isVisible !== false).map(l => l.name);
+    return activeLineNames.length > 0 ? activeLineNames : LINES;
+  }, [lines]);
+
+  const availableCategories = useMemo(() => {
+    const activeCatNames = categories.filter(c => c.isVisible !== false).map(c => c.name);
+    return activeCatNames.length > 0 ? activeCatNames : CATEGORIES;
+  }, [categories]);
+
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const isPubliclyVisible = product.isVisible !== false; 
-      const matchesCategory = activeCategory === 'Todos' || product.category === activeCategory;
+      const matchesLine = activeLine === 'Todas' || product.line === activeLine;
+      const matchesCategory = activeCategory === 'Todas' || product.category === activeCategory;
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            product.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesBrand = selectedBrand === 'Todas' || product.brand === selectedBrand;
-      return isPubliclyVisible && matchesCategory && matchesSearch && matchesBrand;
+      
+      // Também verifica se a linha e categoria dele estão visíveis
+      const lineVisible = lines.find(l => l.name === product.line)?.isVisible !== false;
+      const catVisible = categories.find(c => c.name === product.category)?.isVisible !== false;
+
+      return isPubliclyVisible && matchesLine && matchesCategory && matchesSearch && matchesBrand && lineVisible && catVisible;
     });
-  }, [activeCategory, searchQuery, selectedBrand, products]);
+  }, [activeLine, activeCategory, searchQuery, selectedBrand, products, lines, categories]);
 
   const handleSelectCategory = (category: Category) => {
     setActiveCategory(category);
@@ -161,6 +268,51 @@ const App: React.FC = () => {
     }
   };
 
+  // Funções Administrativas de Linhas e Categorias
+  const saveLine = async (line: any) => {
+    const path = `lines/${line.id}`;
+    try {
+      await setDoc(doc(db, 'lines', line.id), { 
+        name: line.name, 
+        isVisible: line.isVisible,
+        imageUrl: line.imageUrl || ''
+      });
+    } catch (e) {
+      handleFirestoreError(e, OperationType.WRITE, path);
+    }
+  };
+
+  const deleteLine = async (id: string) => {
+    const path = `lines/${id}`;
+    try {
+      await deleteDoc(doc(db, 'lines', id));
+    } catch (e) {
+      handleFirestoreError(e, OperationType.DELETE, path);
+    }
+  };
+
+  const saveCategory = async (cat: any) => {
+    const path = `categories/${cat.id}`;
+    try {
+      await setDoc(doc(db, 'categories', cat.id), { 
+        name: cat.name, 
+        isVisible: cat.isVisible,
+        imageUrl: cat.imageUrl || ''
+      });
+    } catch (e) {
+      handleFirestoreError(e, OperationType.WRITE, path);
+    }
+  };
+
+  const deleteCategory = async (id: string) => {
+    const path = `categories/${id}`;
+    try {
+      await deleteDoc(doc(db, 'categories', id));
+    } catch (e) {
+      handleFirestoreError(e, OperationType.DELETE, path);
+    }
+  };
+
   const totalItemsCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
@@ -191,7 +343,7 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div 
             className="flex flex-col cursor-pointer" 
-            onClick={() => { setViewMode('categories'); setActiveCategory('Todos'); }}
+            onClick={() => { setViewMode('lines'); setActiveLine('Todas'); setActiveCategory('Todas'); }}
           >
             <h1 className="text-xl font-black text-[#2D2D2D] tracking-tighter uppercase font-serif">
               Rebeca<span className="text-[#C5A059]">Nóbrega</span>
@@ -257,29 +409,90 @@ const App: React.FC = () => {
       )}
 
       {/* Conteúdo Principal */}
-      <main className="max-w-7xl mx-auto px-6 py-10">
-        
-        {viewMode === 'categories' ? (
-          /* VISÃO DE CATEGORIAS */
+      <main className="max-w-7xl mx-auto px-6 py-10 min-h-[400px]">
+        {isFirebaseSyncing && products.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 animate-pulse">
+            <div className="w-12 h-12 border-4 border-[#C5A059] border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest">Sincronizando Portfólio Profissional...</p>
+          </div>
+        ) : viewMode === 'lines' ? (
+          /* VISÃO DE LINHAS */
           <div className="space-y-12 animate-in fade-in duration-700">
             <div className="flex items-center gap-4">
               <div className="bg-[#2D2D2D] text-white p-2 rounded-xl">
                 <LayoutGrid size={18} />
               </div>
-              <h3 className="text-xl font-bold text-[#2D2D2D] font-serif uppercase tracking-widest">Portfólio por Linhas</h3>
+              <h3 className="text-xl font-bold text-[#2D2D2D] font-serif uppercase tracking-widest">Escolha a Linha</h3>
               <div className="h-[1px] flex-grow bg-orange-100"></div>
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {availableLines.map(line => {
+                const lineData = lines.find(l => l.name === line);
+                const lineProducts = products.filter(p => p.line === line && p.isVisible !== false);
+                const representativeProduct = lineProducts[0] || PRODUCTS_DATA.find(p => p.line === line) || PRODUCTS_DATA[0];
+                
+                const displayImage = lineData?.imageUrl || (line === 'PROFISSIONAL' 
+                  ? "https://mirracosmeticos.com/wp-content/uploads/2025/02/pro-1.webp" 
+                  : "https://mirracosmeticos.com/wp-content/uploads/2025/02/Elements-_ProteinaLeite-copy-Photoroom.webp");
+
+                return (
+                  <div 
+                    key={line}
+                    onClick={() => {
+                      setActiveLine(line);
+                      setViewMode('categories');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="group relative h-80 rounded-[40px] overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500 active:scale-95"
+                  >
+                    <img 
+                      src={displayImage} 
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      alt={line}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-10">
+                      <h4 className="text-3xl font-black text-white font-serif uppercase tracking-widest mb-2">{line}</h4>
+                      <p className="text-[#C5A059] text-[10px] font-black uppercase tracking-[0.2em]">Ver Categorias →</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : viewMode === 'categories' ? (
+          /* VISÃO DE CATEGORIAS DA LINHA SELECIONADA */
+          <div className="space-y-12 animate-in fade-in duration-700">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => setViewMode('lines')}
+                  className="p-3 bg-white border border-orange-100 rounded-full hover:bg-orange-50 text-[#C5A059] transition-all shadow-sm"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <div>
+                  <h3 className="text-3xl font-bold text-[#2D2D2D] font-serif uppercase tracking-widest">{activeLine}</h3>
+                  <p className="text-[10px] font-black text-[#D8B4A6] uppercase tracking-[0.2em] mt-1">
+                    Selecione uma categoria técnica
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {CATEGORIES.map(cat => {
-                const productsInCat = products.filter(p => p.category === cat && p.isVisible !== false);
-                if (productsInCat.length === 0) return null;
+              {availableCategories.map(cat => {
+                const catData = categories.find(c => c.name === cat);
+                const productsInCat = products.filter(p => p.line === activeLine && p.category === cat && p.isVisible !== false);
+                const representativeProduct = productsInCat[0] || PRODUCTS_DATA.find(p => p.category === cat) || PRODUCTS_DATA[0];
+                
                 return (
                   <CategoryCard 
                     key={cat}
                     category={cat}
-                    representativeProduct={productsInCat[0]}
+                    representativeProduct={representativeProduct}
                     productCount={productsInCat.length}
+                    imageUrl={catData?.imageUrl}
                     onSelect={handleSelectCategory}
                   />
                 );
@@ -292,14 +505,18 @@ const App: React.FC = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <button 
-                  onClick={() => setViewMode('categories')}
+                  onClick={() => { setViewMode('categories'); }}
                   className="p-3 bg-white border border-orange-100 rounded-full hover:bg-orange-50 text-[#C5A059] transition-all shadow-sm"
                 >
                   <ChevronLeft size={20} />
                 </button>
                 <div>
-                  <h3 className="text-3xl font-bold text-[#2D2D2D] font-serif">{activeCategory}</h3>
-                  <p className="text-[10px] font-black text-[#D8B4A6] uppercase tracking-[0.2em] mt-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest">{activeLine}</span>
+                    <span className="text-gray-300">/</span>
+                    <h3 className="text-3xl font-bold text-[#2D2D2D] font-serif">{activeCategory}</h3>
+                  </div>
+                  <p className="text-[10px] font-black text-[#D8B4A6] uppercase tracking-[0.2em]">
                     Exibindo {filteredProducts.length} itens localizados
                   </p>
                 </div>
@@ -345,8 +562,14 @@ const App: React.FC = () => {
       {showAdmin && currentUser && (
         <AdminPanel 
           products={products} 
+          lines={lines.length > 0 ? lines : LINES.map(l => ({ id: l.toLowerCase(), name: l, isVisible: true }))}
+          categories={categories.length > 0 ? categories : CATEGORIES.map(c => ({ id: c.toLowerCase(), name: c, isVisible: true }))}
           onSave={saveProduct} 
           onDelete={deleteProduct} 
+          onSaveLine={saveLine}
+          onDeleteLine={deleteLine}
+          onSaveCategory={saveCategory}
+          onDeleteCategory={deleteCategory}
           onClose={() => setShowAdmin(false)} 
         />
       )}
@@ -460,7 +683,9 @@ const App: React.FC = () => {
                 </button>
               ) : (
                 <div className="flex items-center gap-6 mt-4">
-                  <span className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest">Olá, {currentUser.name}</span>
+                  <span className="text-[9px] font-black text-[#C5A059] uppercase tracking-widest">
+                    Olá, {currentUser.displayName || currentUser.email?.split('@')[0] || 'Admin'}
+                  </span>
                   <button 
                     onClick={() => { auth.signOut(); setCurrentUser(null); setShowAdmin(false); }}
                     className="flex items-center gap-1 text-[9px] font-black text-red-400 uppercase tracking-widest hover:text-red-600 transition-colors"
