@@ -102,7 +102,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     }
   };
 
-  const filteredProducts = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+  const sortedLines = [...lines].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+  const filteredProducts = products
+    .filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className="fixed inset-0 z-[110] flex flex-col bg-[#FDFBF9] animate-in fade-in duration-300">
@@ -284,7 +288,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                 <div className="bg-white rounded-[32px] border border-orange-50 overflow-hidden shadow-sm">
                   <table className="w-full text-left">
                     <tbody className="divide-y divide-orange-50">
-                      {lines.map(line => (
+                      {sortedLines.map(line => (
                         <tr key={line.id} className="hover:bg-orange-50/20 transition-all">
                           <td className="px-8 py-5">
                             <div className="flex items-center justify-between">
@@ -326,7 +330,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                 <div className="bg-white rounded-[32px] border border-orange-50 overflow-hidden shadow-sm">
                   <table className="w-full text-left">
                     <tbody className="divide-y divide-orange-50">
-                      {categories.map(cat => (
+                      {sortedCategories.map(cat => (
                         <tr key={cat.id} className="hover:bg-orange-50/20 transition-all">
                           <td className="px-8 py-5">
                             <div className="flex items-center justify-between">
@@ -435,7 +439,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                     onChange={(e) => setEditingProduct({...editingProduct, line: e.target.value as any})}
                     className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]"
                   >
-                    {lines.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
+                    {sortedLines.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -446,7 +450,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                     onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value as any})}
                     className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]"
                   >
-                    {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                    {sortedCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                   </select>
                 </div>
               </div>
@@ -541,7 +545,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                     className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]"
                   >
                     <option value="">Selecione uma linha</option>
-                    {lines.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
+                    {sortedLines.map(l => <option key={l.id} value={l.name}>{l.name}</option>)}
                   </select>
                 </div>
               )}
