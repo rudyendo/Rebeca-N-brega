@@ -208,7 +208,13 @@ const App: React.FC = () => {
 
   const availableCategories = useMemo(() => {
     // Se não houver nada no Firestore ainda, usa as constantes
-    if (categories.length === 0) return [...CATEGORIES].sort((a, b) => a.localeCompare(b));
+    if (categories.length === 0) {
+      return [...CATEGORIES].sort((a, b) => a.localeCompare(b)).map(name => ({
+        id: name.toLowerCase(),
+        name,
+        isVisible: true
+      }));
+    }
 
     return categories
       .filter(c => {
@@ -216,22 +222,24 @@ const App: React.FC = () => {
         const matchesLine = activeLine === 'Todas' || c.line === activeLine || !c.line;
         return isVisible && matchesLine;
       })
-      .map(c => c.name)
-      .sort((a, b) => a.localeCompare(b));
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [categories, activeLine]);
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const isPubliclyVisible = product.isVisible !== false; 
       const matchesLine = activeLine === 'Todas' || product.line === activeLine;
-      const matchesCategory = activeCategory === 'Todas' || product.category === activeCategory;
+      const matchesCategory = activeCategory === 'Todas' || product.category.toUpperCase() === activeCategory.toUpperCase();
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            product.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesBrand = selectedBrand === 'Todas' || product.brand === selectedBrand;
       
       // Também verifica se a linha e categoria dele estão visíveis
       const lineVisible = lines.find(l => l.name === product.line)?.isVisible !== false;
-      const catVisible = categories.find(c => c.name === product.category)?.isVisible !== false;
+      const catVisible = categories.find(c => 
+        c.name.toUpperCase() === product.category.toUpperCase() && 
+        (c.line === product.line || !c.line)
+      )?.isVisible !== false;
 
       return isPubliclyVisible && matchesLine && matchesCategory && matchesSearch && matchesBrand && lineVisible && catVisible;
     }).sort((a, b) => a.name.localeCompare(b.name));
@@ -484,18 +492,24 @@ const App: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {availableCategories.map(cat => {
-                const catData = categories.find(c => c.name === cat);
-                const productsInCat = products.filter(p => p.line === activeLine && p.category === cat && p.isVisible !== false);
-                const representativeProduct = productsInCat[0] || PRODUCTS_DATA.find(p => p.category === cat) || PRODUCTS_DATA[0];
+              {availableCategories.map(catData => {
+                const cat = catData.name;
+                const productsInCat = products.filter(p => 
+                  p.line === activeLine && 
+                  p.category.toUpperCase() === cat.toUpperCase() && 
+                  p.isVisible !== false
+                );
+                const representativeProduct = productsInCat[0] || 
+                  PRODUCTS_DATA.find(p => p.category.toUpperCase() === cat.toUpperCase()) || 
+                  PRODUCTS_DATA[0];
                 
                 return (
                   <CategoryCard 
-                    key={cat}
+                    key={catData.id}
                     category={cat}
                     representativeProduct={representativeProduct}
                     productCount={productsInCat.length}
-                    imageUrl={catData?.imageUrl}
+                    imageUrl={catData.imageUrl}
                     onSelect={handleSelectCategory}
                   />
                 );
