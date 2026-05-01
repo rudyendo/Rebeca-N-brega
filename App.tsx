@@ -202,12 +202,13 @@ const App: React.FC = () => {
   // Filtro de produtos para o catálogo público (Respeita isVisible e filtros de Admin)
   const availableLines = useMemo(() => {
     const activeLineNames = lines.filter(l => l.isVisible !== false).map(l => l.name);
-    return activeLineNames.length > 0 ? activeLineNames : LINES;
+    const sorted = activeLineNames.length > 0 ? activeLineNames : [...LINES];
+    return sorted.sort((a, b) => a.localeCompare(b));
   }, [lines]);
 
   const availableCategories = useMemo(() => {
     // Se não houver nada no Firestore ainda, usa as constantes
-    if (categories.length === 0) return CATEGORIES;
+    if (categories.length === 0) return [...CATEGORIES].sort((a, b) => a.localeCompare(b));
 
     return categories
       .filter(c => {
@@ -215,7 +216,8 @@ const App: React.FC = () => {
         const matchesLine = activeLine === 'Todas' || c.line === activeLine || !c.line;
         return isVisible && matchesLine;
       })
-      .map(c => c.name);
+      .map(c => c.name)
+      .sort((a, b) => a.localeCompare(b));
   }, [categories, activeLine]);
 
   const filteredProducts = useMemo(() => {
@@ -232,7 +234,7 @@ const App: React.FC = () => {
       const catVisible = categories.find(c => c.name === product.category)?.isVisible !== false;
 
       return isPubliclyVisible && matchesLine && matchesCategory && matchesSearch && matchesBrand && lineVisible && catVisible;
-    });
+    }).sort((a, b) => a.name.localeCompare(b.name));
   }, [activeLine, activeCategory, searchQuery, selectedBrand, products, lines, categories]);
 
   const handleSelectCategory = (category: Category) => {
