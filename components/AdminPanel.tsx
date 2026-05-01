@@ -60,6 +60,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
       category: defaultCategory as any,
       imageUrl: '',
       ebookUrl: 'https://mirracosmeticos.com/linha-professional/',
+      colorChartUrl: '',
       details: '',
       isVisible: true 
     });
@@ -514,6 +515,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                   className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none text-xs focus:ring-1 focus:ring-[#C5A059]" 
                 />
               </div>
+
+              {/* Campo para Cartela de Cores - apenas se for Coloração */}
+              {(editingProduct.category?.toUpperCase().includes('COLORAÇÃO') || editingProduct.category?.toUpperCase().includes('COLORAÇÕES')) && (
+                <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-[#C5A059]">URL Cartela de Cores (Opcional)</label>
+                  <input 
+                    disabled={saving}
+                    value={editingProduct.colorChartUrl || ''}
+                    onChange={(e) => setEditingProduct({...editingProduct, colorChartUrl: e.target.value})}
+                    placeholder="https://..."
+                    className="w-full px-6 py-4 rounded-2xl bg-orange-50/30 border border-orange-100 outline-none text-xs focus:ring-1 focus:ring-[#C5A059]" 
+                  />
+                  <p className="text-[9px] text-gray-400 font-medium italic">Insira o link da imagem com as cores deste produto.</p>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-[#D8B4A6]">Detalhes Técnicos</label>

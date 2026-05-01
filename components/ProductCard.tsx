@@ -61,16 +61,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, onViewD
               <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Valor Profissional</span>
               <span className="text-2xl font-black text-[#2D2D2D]">R$ {product.price.toFixed(2).replace('.', ',')}</span>
             </div>
-            <button 
-              onClick={() => onViewDetails(product)}
-              className="p-3 text-[#D8B4A6] hover:text-[#C5A059] transition-colors"
-              title="Mais informações"
-            >
-              <Info size={20} />
-            </button>
           </div>
           
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-2.5">
              <button 
               onClick={() => onAddToCart(product)}
               className="w-full bg-gold-gradient text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-orange-100"
@@ -78,15 +71,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, onViewD
               <ShoppingBag size={14} />
               Adicionar ao Pedido
             </button>
-            <a 
-              href={product.ebookUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 py-3 text-[9px] font-black text-[#D8B4A6] uppercase tracking-widest hover:text-[#C5A059] transition-colors"
+            <button 
+              onClick={() => onViewDetails(product)}
+              className="w-full bg-gray-50 text-[#D8B4A6] py-3.5 rounded-2xl font-black text-[9px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-[#D8B4A6] hover:text-white transition-all"
             >
-              <BookOpen size={12} />
-              Protocolo de Aplicação
-            </a>
+              <Info size={13} />
+              Descrição do Produto
+            </button>
           </div>
         </div>
       </div>

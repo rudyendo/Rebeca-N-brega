@@ -615,6 +615,31 @@ const App: React.FC = () => {
                     {selectedProduct.details || selectedProduct.description}
                   </p>
               </div>
+
+              {/* Cartela de Cores (Se disponível) */}
+              {selectedProduct.colorChartUrl && (
+                <div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-500">
+                  <div className="flex items-center gap-3 mb-6">
+                    <Award size={18} className="text-[#C5A059]" />
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#2D2D2D]">Cartela de Cores</span>
+                  </div>
+                  <div className="relative group rounded-[32px] overflow-hidden border border-orange-100 shadow-sm">
+                    <img 
+                      src={selectedProduct.colorChartUrl} 
+                      alt="Cartela de Cores" 
+                      className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
+                    />
+                    <a 
+                      href={selectedProduct.colorChartUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="absolute bottom-4 right-4 bg-white/90 backdrop-blur px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-[#2D2D2D] border border-orange-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      Ampliar Imagem
+                    </a>
+                  </div>
+                </div>
+              )}
               
               <div className="flex flex-col gap-8 mb-12">
                 <div className="flex flex-col">

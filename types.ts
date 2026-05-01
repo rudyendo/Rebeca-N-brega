@@ -36,6 +36,7 @@ export interface Product {
   price: number;
   imageUrl: string;
   ebookUrl: string;
+  colorChartUrl?: string;
   details: string;
   reviews?: Review[];
   isVisible: boolean; 
