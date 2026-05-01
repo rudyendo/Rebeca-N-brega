@@ -287,7 +287,6 @@ const App: React.FC = () => {
   };
 
   const deleteProduct = async (id: string) => {
-    if (!confirm('Deseja realmente remover este produto do catálogo?')) return;
     const path = `products/${id}`;
     try {
       await deleteDoc(doc(db, 'products', id));

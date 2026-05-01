@@ -29,6 +29,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const [search, setSearch] = useState('');
   const [saving, setSaving] = useState(false);
 
+  const [confirmDelete, setConfirmDelete] = useState<{ id: string, type: 'product' | 'line' | 'category' } | null>(null);
+
   // Handlers para Produtos
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
@@ -51,6 +53,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
       details: '',
       isVisible: true 
     });
+  };
+
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
+    setSaving(true);
+    try {
+      if (confirmDelete.type === 'product') {
+        await onDelete(confirmDelete.id);
+      } else if (confirmDelete.type === 'line') {
+        await onDeleteLine(confirmDelete.id);
+      } else if (confirmDelete.type === 'category') {
+        await onDeleteCategory(confirmDelete.id);
+      }
+      setConfirmDelete(null);
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao excluir item.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleSubmitProduct = async (e: React.FormEvent) => {
@@ -257,7 +279,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                               <button onClick={() => handleEditProduct(p)} className="p-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-[#C5A059] hover:text-white transition-all">
                                 <Edit2 size={14} />
                               </button>
-                              <button onClick={() => onDelete(p.id)} className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                              <button onClick={() => setConfirmDelete({ id: p.id, type: 'product' })} className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all">
                                 <Trash2 size={14} />
                               </button>
                             </div>
@@ -303,7 +325,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                 <button onClick={() => handleEditItem('line', line)} className="p-2 text-gray-400 hover:text-[#C5A059] transition-all">
                                   <Edit2 size={14} />
                                 </button>
-                                <button onClick={() => onDeleteLine(line.id)} className="p-2 text-gray-400 hover:text-red-500 transition-all">
+                                <button onClick={() => setConfirmDelete({ id: line.id, type: 'line' })} className="p-2 text-gray-400 hover:text-red-500 transition-all">
                                   <Trash2 size={14} />
                                 </button>
                               </div>
@@ -348,7 +370,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                 <button onClick={() => handleEditItem('category', cat)} className="p-2 text-gray-400 hover:text-[#C5A059] transition-all">
                                   <Edit2 size={14} />
                                 </button>
-                                <button onClick={() => onDeleteCategory(cat.id)} className="p-2 text-gray-400 hover:text-red-500 transition-all">
+                                <button onClick={() => setConfirmDelete({ id: cat.id, type: 'category' })} className="p-2 text-gray-400 hover:text-red-500 transition-all">
                                   <Trash2 size={14} />
                                 </button>
                               </div>
@@ -586,6 +608,36 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Modal de Confirmação de Exclusão */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-[#2D2D2D]/90 backdrop-blur-md" onClick={() => setConfirmDelete(null)} />
+          <div className="relative bg-white w-full max-w-sm rounded-[40px] p-10 text-center animate-in zoom-in-95 duration-300">
+            <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center mx-auto text-red-500 mb-6">
+              <Trash2 size={32} />
+            </div>
+            <h3 className="text-xl font-bold font-serif text-[#2D2D2D] mb-4">Confirmar Exclusão?</h3>
+            <p className="text-sm text-gray-500 font-medium mb-8">Esta ação é permanente e não poderá ser desfeita no catálogo.</p>
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={handleDelete}
+                disabled={saving}
+                className="w-full bg-red-500 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg"
+              >
+                {saving ? 'Excluindo...' : 'Sim, Remover do Catálogo'}
+              </button>
+              <button 
+                onClick={() => setConfirmDelete(null)}
+                disabled={saving}
+                className="w-full bg-gray-50 text-gray-400 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-100 transition-all"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
